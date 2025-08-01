@@ -5,6 +5,7 @@ import (
 
 	"github.com/adm87/finch-application/application"
 	"github.com/adm87/finch-application/config"
+	"github.com/adm87/finch-common/camera"
 	"github.com/adm87/finch-core/ecs"
 	"github.com/adm87/finch-editor/systems"
 	"github.com/hajimehoshi/ebiten/v2"
@@ -37,13 +38,31 @@ var Application = application.NewApplicationWithConfig(
 	WithShutdown(Shutdown)
 
 func Start(app *application.Application) error {
-	app.World().RegisterSystems(map[ecs.System]int{
-		systems.NewEditorGridRenderer(): 0,
-	})
+	if err := RegisterSystems(app.World()); err != nil {
+		return err
+	}
 	return nil
 }
 
 func Shutdown(app *application.Application) error {
 	// TODO: shutdown the editor application
+	return nil
+}
+
+func RegisterSystems(world *ecs.World) error {
+	// Register Update Systems
+	if _, err := world.RegisterSystems(map[ecs.System]int{
+		camera.NewCameraLateUpdate(world): 1000,
+	}); err != nil {
+		return err
+	}
+
+	// Register Rendering Systems
+	if _, err := world.RegisterSystems(map[ecs.System]int{
+		systems.NewEditorGridRenderer(): -1,
+	}); err != nil {
+		return err
+	}
+
 	return nil
 }

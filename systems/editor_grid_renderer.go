@@ -6,7 +6,10 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-var EditorGridRendererType = ecs.SystemType(hash.GetHashFromType[EditorGridRenderer]())
+var (
+	EditorGridRendererType   = ecs.SystemType(hash.GetHashFromType[EditorGridRenderer]())
+	EditorGridRendererFilter = []ecs.ComponentType{}
+)
 
 type EditorGridRenderer struct {
 }
@@ -16,13 +19,13 @@ func NewEditorGridRenderer() *EditorGridRenderer {
 }
 
 func (s *EditorGridRenderer) Filter() []ecs.ComponentType {
-	return []ecs.ComponentType{}
+	return EditorGridRendererFilter
 }
 
 func (s *EditorGridRenderer) Type() ecs.SystemType {
 	return EditorGridRendererType
 }
 
-func (s *EditorGridRenderer) Render(entities []ecs.Entity, buffer *ebiten.Image, view ebiten.GeoM) error {
+func (s *EditorGridRenderer) Render(entities []*ecs.Entity, buffer *ebiten.Image, view ebiten.GeoM) error {
 	return nil
 }
