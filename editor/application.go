@@ -5,6 +5,8 @@ import (
 
 	"github.com/adm87/finch-application/application"
 	"github.com/adm87/finch-application/config"
+	"github.com/adm87/finch-core/ecs"
+	"github.com/adm87/finch-editor/systems"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -28,14 +30,16 @@ var Application = application.NewApplicationWithConfig(
 			ResizeMode:   ebiten.WindowResizingModeEnabled,
 			RenderScale:  1.0,
 			Fullscreen:   false,
-			ClearColor:   color.RGBA{R: 100, G: 149, B: 237, A: 255},
+			ClearColor:   color.RGBA{R: 30, G: 30, B: 30, A: 255},
 		},
 	}).
 	WithStartup(Start).
 	WithShutdown(Shutdown)
 
 func Start(app *application.Application) error {
-	// TODO: start the editor application
+	app.World().RegisterSystems(map[ecs.System]int{
+		systems.NewEditorGridRenderer(): 0,
+	})
 	return nil
 }
 
