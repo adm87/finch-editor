@@ -6,6 +6,7 @@ import (
 	"github.com/adm87/finch-application/application"
 	"github.com/adm87/finch-application/config"
 	"github.com/adm87/finch-common/camera"
+	"github.com/adm87/finch-common/transform"
 	"github.com/adm87/finch-core/ecs"
 	"github.com/adm87/finch-editor/systems"
 	"github.com/hajimehoshi/ebiten/v2"
@@ -41,6 +42,9 @@ func Start(app *application.Application) error {
 	if err := RegisterSystems(app.World()); err != nil {
 		return err
 	}
+	if err := SetupElements(app.World()); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -64,5 +68,19 @@ func RegisterSystems(world *ecs.World) error {
 		return err
 	}
 
+	return nil
+}
+
+func SetupElements(world *ecs.World) error {
+	cameraEntity, err := ecs.NewEntity().AddComponents(
+		camera.NewCameraComponent(),
+		transform.NewTransformComponent(),
+	)
+	if err != nil {
+		return err
+	}
+	if _, err := world.AddEntities(cameraEntity); err != nil {
+		return err
+	}
 	return nil
 }
