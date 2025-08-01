@@ -39,10 +39,10 @@ var Application = application.NewApplicationWithConfig(
 	WithShutdown(Shutdown)
 
 func Start(app *application.Application) error {
-	if err := RegisterSystems(app.World()); err != nil {
+	if err := RegisterSystems(app); err != nil {
 		return err
 	}
-	if err := SetupElements(app.World()); err != nil {
+	if err := SetupElements(app); err != nil {
 		return err
 	}
 	return nil
@@ -53,17 +53,17 @@ func Shutdown(app *application.Application) error {
 	return nil
 }
 
-func RegisterSystems(world *ecs.World) error {
+func RegisterSystems(app *application.Application) error {
 	// Register Update Systems
-	if _, err := world.RegisterSystems(map[ecs.System]int{
-		camera.NewCameraLateUpdate(world): 1000,
+	if _, err := app.World().RegisterSystems(map[ecs.System]int{
+		camera.NewCameraLateUpdate(app.World(), app.Config().Window): 1000,
 	}); err != nil {
 		return err
 	}
 
 	// Register Rendering Systems
-	if _, err := world.RegisterSystems(map[ecs.System]int{
-		systems.NewEditorGridRenderer(): -1,
+	if _, err := app.World().RegisterSystems(map[ecs.System]int{
+		systems.NewEditorGridRenderer(app.World(), app.Config().Window): -1,
 	}); err != nil {
 		return err
 	}
@@ -71,7 +71,7 @@ func RegisterSystems(world *ecs.World) error {
 	return nil
 }
 
-func SetupElements(world *ecs.World) error {
+func SetupElements(app *application.Application) error {
 	cameraEntity, err := ecs.NewEntity().AddComponents(
 		camera.NewCameraComponent(),
 		transform.NewTransformComponent(),
@@ -79,7 +79,7 @@ func SetupElements(world *ecs.World) error {
 	if err != nil {
 		return err
 	}
-	if _, err := world.AddEntities(cameraEntity); err != nil {
+	if _, err := app.World().AddEntities(cameraEntity); err != nil {
 		return err
 	}
 	return nil
