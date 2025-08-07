@@ -66,7 +66,7 @@ func (s *EditorGridRenderer) Type() ecs.SystemType {
 	return EditorGridRendererType
 }
 
-func (s *EditorGridRenderer) Render(entities []*ecs.Entity, buffer *ebiten.Image, view ebiten.GeoM) error {
+func (s *EditorGridRenderer) Render(entities []*ecs.Entity, buffer *ebiten.Image, view ebiten.GeoM, interpolation float64) error {
 	if len(entities) == 0 {
 		return nil
 	}

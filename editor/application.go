@@ -15,9 +15,10 @@ import (
 var Application = application.NewApplicationWithConfig(
 	&application.ApplicationConfig{
 		Metadata: &config.Metadata{
-			Name:    "Finch Editor",
-			Version: "0.0.0-unreleased",
-			Root:    ".",
+			Name:      "Finch Editor",
+			Version:   "0.0.0-unreleased",
+			Root:      ".",
+			TargetFps: 60,
 		},
 		Resources: &config.Resources{
 			Path:         "data/",
