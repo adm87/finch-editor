@@ -32,7 +32,7 @@ var Application = application.NewApplicationWithConfig(
 			ScreenHeight: 600,
 			ResizeMode:   ebiten.WindowResizingModeEnabled,
 			RenderScale:  1.0,
-			Fullscreen:   false,
+			Fullscreen:   true,
 			ClearColor:   color.RGBA{R: 30, G: 30, B: 30, A: 255},
 		},
 	}).
@@ -55,16 +55,16 @@ func Shutdown(app *application.Application) error {
 }
 
 func RegisterSystems(app *application.Application) error {
-	// Register Update Systems
+	// Register LateUpdate Systems
 	if _, err := app.World().RegisterSystems(map[ecs.System]int{
-		camera.NewCameraLateUpdate(app.World(), app.Config().Window): 1000,
+		camera.NewCameraLateUpdate(app.World(), app.Config().Window): 0,
 	}); err != nil {
 		return err
 	}
 
 	// Register Rendering Systems
 	if _, err := app.World().RegisterSystems(map[ecs.System]int{
-		systems.NewEditorGridRenderer(app.World(), app.Config().Window): -1,
+		systems.NewEditorGridRenderer(app.World(), app.Config().Window): 0,
 	}); err != nil {
 		return err
 	}
