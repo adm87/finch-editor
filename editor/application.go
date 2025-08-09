@@ -7,11 +7,8 @@ import (
 
 	"github.com/adm87/finch-application/application"
 	"github.com/adm87/finch-application/config"
-	"github.com/adm87/finch-common/camera"
-	"github.com/adm87/finch-common/renderers"
 	"github.com/adm87/finch-core/ecs"
 	"github.com/adm87/finch-core/errors"
-	"github.com/adm87/finch-core/transform"
 	"github.com/adm87/finch-editor/systems"
 	"github.com/adm87/finch-rendering/rendering"
 	"github.com/hajimehoshi/ebiten/v2"
@@ -76,13 +73,6 @@ func RegisterApplicationResources(app *application.Application) error {
 }
 
 func RegisterSystems(app *application.Application) error {
-	// Register LateUpdate Systems
-	if _, err := app.World().RegisterSystems(map[ecs.System]int{
-		camera.NewCameraLateUpdate(app.World(), app.Config().Window): 0,
-	}); err != nil {
-		return err
-	}
-
 	// Register Rendering Systems
 	if _, err := app.World().RegisterSystems(map[ecs.System]int{
 		systems.NewEditorGridRenderer(app.World(), app.Config().Window): 0,
@@ -95,30 +85,5 @@ func RegisterSystems(app *application.Application) error {
 }
 
 func SetupElements(app *application.Application) error {
-	tile0000Img, err := app.Cache().Images().Get("tile_0000")
-	if err != nil {
-		return err
-	}
-	spriteRenderer := renderers.NewSpriteRenderer(tile0000Img, 0.5, 0.5)
-
-	cameraEntity, err := ecs.NewEntity().AddComponents(
-		camera.NewCameraComponent(),
-		transform.NewTransformComponent(),
-	)
-	if err != nil {
-		return err
-	}
-
-	spriteEntity, err := ecs.NewEntity().AddComponents(
-		transform.NewTransformComponent(),
-		rendering.NewRenderComponent(spriteRenderer, 0),
-	)
-	if err != nil {
-		return err
-	}
-
-	if _, err := app.World().AddEntities(cameraEntity, spriteEntity); err != nil {
-		return err
-	}
 	return nil
 }

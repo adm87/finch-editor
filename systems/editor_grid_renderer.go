@@ -5,9 +5,7 @@ import (
 	"math"
 
 	"github.com/adm87/finch-application/config"
-	"github.com/adm87/finch-common/camera"
 	"github.com/adm87/finch-core/ecs"
-	"github.com/adm87/finch-core/errors"
 	"github.com/adm87/finch-core/hash"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
@@ -22,9 +20,7 @@ const (
 var (
 	EditorGridColor          = []float32{1.0, 1.0, 1.0, 0.5}
 	EditorGridRendererType   = ecs.SystemType(hash.GetHashFromType[EditorGridRenderer]())
-	EditorGridRendererFilter = []ecs.ComponentType{
-		camera.CameraComponentType,
-	}
+	EditorGridRendererFilter = []ecs.ComponentType{}
 )
 
 type ScaleGrid struct {
@@ -33,12 +29,10 @@ type ScaleGrid struct {
 }
 
 type EditorGridRenderer struct {
-	img             *ebiten.Image
-	cameraComponent *camera.CameraComponent
-	cameraEntity    *ecs.Entity
-	world           *ecs.World
-	window          *config.Window
-	grids           []ScaleGrid
+	img    *ebiten.Image
+	world  *ecs.World
+	window *config.Window
+	grids  []ScaleGrid
 }
 
 func NewEditorGridRenderer(world *ecs.World, window *config.Window) *EditorGridRenderer {
@@ -67,24 +61,7 @@ func (s *EditorGridRenderer) Type() ecs.SystemType {
 }
 
 func (s *EditorGridRenderer) Render(entities []*ecs.Entity, buffer *ebiten.Image, view ebiten.GeoM, interpolation float64) error {
-	if len(entities) == 0 {
-		return nil
-	}
-	if len(entities) > 1 {
-		return errors.NewAmbiguousError("multiple camera entities found, expected only one")
-	}
-
-	if s.cameraEntity == nil || s.cameraEntity.ID() != entities[0].ID() {
-		if err := s.CacheOperationComponents(entities[0]); err != nil {
-			return err
-		}
-	}
-
-	if s.cameraComponent == nil {
-		return errors.NewNotFoundError("cannot render grid without camera component")
-	}
-
-	zoom := s.cameraComponent.Zoom()
+	zoom := 1.0
 
 	invView := view
 	invView.Invert()
@@ -187,20 +164,4 @@ func (s *EditorGridRenderer) GetCorners(spacing float32, view ebiten.GeoM, invVi
 	endY := float32(math.Ceil(float64(bottom/spacing)) * float64(spacing))
 
 	return startX, endX, startY, endY
-}
-
-func (s *EditorGridRenderer) CacheOperationComponents(entity *ecs.Entity) error {
-	if entity == nil {
-		return errors.NewNilError("cannot cache operation components with nil entity")
-	}
-
-	cameraComponent, _, err := entity.GetComponent(camera.CameraComponentType)
-	if err != nil {
-		return err
-	}
-
-	s.cameraEntity = entity
-	s.cameraComponent = cameraComponent.(*camera.CameraComponent)
-
-	return nil
 }
