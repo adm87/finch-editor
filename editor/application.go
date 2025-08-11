@@ -77,6 +77,8 @@ func RegisterApplicationResources(app *application.Application) error {
 }
 
 func RegisterSystems(app *application.Application) error {
+	// Register EarlyUpdate systems
+
 	// Register LateUpdate systems
 	if err := ecs.RegisterSystems(map[ecs.System]int{
 		systems.NewCameraLateUpdateSystem(app): 0,

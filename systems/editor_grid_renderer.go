@@ -7,6 +7,7 @@ import (
 	"github.com/adm87/finch-application/config"
 	"github.com/adm87/finch-core/ecs"
 	"github.com/adm87/finch-core/hash"
+	"github.com/adm87/finch-editor/components"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
@@ -20,7 +21,9 @@ const (
 var (
 	EditorGridColor          = []float32{1.0, 1.0, 1.0, 0.5}
 	EditorGridRendererType   = ecs.NewSystemType[*EditorGridRenderer]()
-	EditorGridRendererFilter = []ecs.ComponentType{}
+	EditorGridRendererFilter = []ecs.ComponentType{
+		components.CameraComponentType,
+	}
 )
 
 type ScaleGrid struct {
@@ -59,7 +62,18 @@ func (s *EditorGridRenderer) Filter() []ecs.ComponentType {
 }
 
 func (s *EditorGridRenderer) Render(entities hash.HashSet[ecs.Entity], buffer *ebiten.Image, view ebiten.GeoM) error {
-	zoom := 1.0
+	if len(entities) == 0 {
+		return nil
+	}
+
+	if len(entities) > 1 {
+		return ErrAmbiguousCameras
+	}
+
+	entity, _ := entities.First()
+	camera, _, _ := ecs.GetComponent[*components.CameraComponent](entity, components.CameraComponentType)
+
+	zoom := camera.Zoom()
 
 	invView := view
 	invView.Invert()
