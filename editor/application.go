@@ -11,6 +11,7 @@ import (
 	"github.com/adm87/finch-core/ecs"
 	"github.com/adm87/finch-core/errors"
 	"github.com/adm87/finch-core/geometry"
+	"github.com/adm87/finch-editor/components"
 	"github.com/adm87/finch-editor/systems"
 	"github.com/adm87/finch-rendering/rendering"
 	"github.com/adm87/finch-rendering/sprites"
@@ -76,6 +77,13 @@ func RegisterApplicationResources(app *application.Application) error {
 }
 
 func RegisterSystems(app *application.Application) error {
+	// Register LateUpdate systems
+	if err := ecs.RegisterSystems(map[ecs.System]int{
+		systems.NewCameraLateUpdateSystem(app): 0,
+	}); err != nil {
+		return err
+	}
+
 	// Register Rendering systems
 	if err := ecs.RegisterSystems(map[ecs.System]int{
 		systems.NewEditorGridRenderer(app.Config().Window): 0,
@@ -83,6 +91,7 @@ func RegisterSystems(app *application.Application) error {
 	}); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -93,11 +102,20 @@ func SetupElements(app *application.Application) error {
 	}
 	tile0000Renderer := sprites.NewSpriteRenderer(img, geometry.Point64{X: 0.5, Y: 0.5})
 
+	// Test sprite entity
 	if _, err := ecs.NewEntityWithComponents(
 		transform.NewTransformComponent(),
 		rendering.NewRenderComponent(tile0000Renderer, 0),
 	); err != nil {
 		return err
 	}
+
+	// Camera entity
+	if _, err := ecs.NewEntityWithComponents(
+		components.NewCameraComponent(),
+	); err != nil {
+		return err
+	}
+
 	return nil
 }

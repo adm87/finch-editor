@@ -11,6 +11,9 @@
 !cmd/
 !cmd/**/*
 
+!components/
+!components/**/*
+
 !data/
 !data/**/*
 
