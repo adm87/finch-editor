@@ -19,7 +19,7 @@ const (
 
 var (
 	EditorGridColor          = []float32{1.0, 1.0, 1.0, 0.5}
-	EditorGridRendererType   = ecs.SystemType(hash.GetHashFromType[EditorGridRenderer]())
+	EditorGridRendererType   = ecs.NewSystemType[*EditorGridRenderer]()
 	EditorGridRendererFilter = []ecs.ComponentType{}
 )
 

@@ -94,12 +94,7 @@ func SetupElements(app *application.Application) error {
 	tile0000Renderer := sprites.NewSpriteRenderer(img, geometry.Point64{X: 0.5, Y: 0.5})
 
 	if _, err := ecs.NewEntityWithComponents(
-		transform.NewTransformComponentWith(
-			geometry.Point64{X: 32, Y: 32},
-			geometry.Point64{X: 1, Y: 1},
-			geometry.Point64{X: 0, Y: 0},
-			0,
-		),
+		transform.NewTransformComponent(),
 		rendering.NewRenderComponent(tile0000Renderer, 0),
 	); err != nil {
 		return err
