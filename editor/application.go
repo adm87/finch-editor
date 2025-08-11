@@ -7,10 +7,13 @@ import (
 
 	"github.com/adm87/finch-application/application"
 	"github.com/adm87/finch-application/config"
+	"github.com/adm87/finch-core/components/transform"
 	"github.com/adm87/finch-core/ecs"
 	"github.com/adm87/finch-core/errors"
+	"github.com/adm87/finch-core/geometry"
 	"github.com/adm87/finch-editor/systems"
 	"github.com/adm87/finch-rendering/rendering"
+	"github.com/adm87/finch-rendering/sprites"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -73,17 +76,33 @@ func RegisterApplicationResources(app *application.Application) error {
 }
 
 func RegisterSystems(app *application.Application) error {
-	// Register Rendering Systems
-	if _, err := app.World().RegisterSystems(map[ecs.System]int{
-		systems.NewEditorGridRenderer(app.World(), app.Config().Window): 0,
-		rendering.NewRenderSystem():                                     1,
+	// Register Rendering systems
+	if err := ecs.RegisterSystems(map[ecs.System]int{
+		systems.NewEditorGridRenderer(app.Config().Window): 0,
+		rendering.NewRenderSystem():                        1,
 	}); err != nil {
 		return err
 	}
-
 	return nil
 }
 
 func SetupElements(app *application.Application) error {
+	img, err := app.Cache().Images().Get("tile_0000")
+	if err != nil {
+		return err
+	}
+	tile0000Renderer := sprites.NewSpriteRenderer(img, geometry.Point64{X: 0.5, Y: 0.5})
+
+	if _, err := ecs.NewEntityWithComponents(
+		transform.NewTransformComponentWith(
+			geometry.Point64{X: 32, Y: 32},
+			geometry.Point64{X: 1, Y: 1},
+			geometry.Point64{X: 0, Y: 0},
+			0,
+		),
+		rendering.NewRenderComponent(tile0000Renderer, 0),
+	); err != nil {
+		return err
+	}
 	return nil
 }

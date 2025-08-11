@@ -30,17 +30,15 @@ type ScaleGrid struct {
 
 type EditorGridRenderer struct {
 	img    *ebiten.Image
-	world  *ecs.World
 	window *config.Window
 	grids  []ScaleGrid
 }
 
-func NewEditorGridRenderer(world *ecs.World, window *config.Window) *EditorGridRenderer {
+func NewEditorGridRenderer(window *config.Window) *EditorGridRenderer {
 	img := ebiten.NewImage(1, 1)
 	img.Fill(color.White)
 	return &EditorGridRenderer{
 		img:    img,
-		world:  world,
 		window: window,
 		grids: []ScaleGrid{
 			{Scale: 0.01},
@@ -52,15 +50,15 @@ func NewEditorGridRenderer(world *ecs.World, window *config.Window) *EditorGridR
 	}
 }
 
-func (s *EditorGridRenderer) Filter() []ecs.ComponentType {
-	return EditorGridRendererFilter
-}
-
 func (s *EditorGridRenderer) Type() ecs.SystemType {
 	return EditorGridRendererType
 }
 
-func (s *EditorGridRenderer) Render(entities []*ecs.Entity, buffer *ebiten.Image, view ebiten.GeoM, interpolation float64) error {
+func (s *EditorGridRenderer) Filter() []ecs.ComponentType {
+	return EditorGridRendererFilter
+}
+
+func (s *EditorGridRenderer) Render(entities hash.HashSet[ecs.Entity], buffer *ebiten.Image, view ebiten.GeoM) error {
 	zoom := 1.0
 
 	invView := view
