@@ -42,7 +42,9 @@ var Application = application.NewApplicationWithConfig(
 		},
 	}).
 	WithStartup(Start).
-	WithShutdown(Shutdown)
+	WithShutdown(Shutdown).
+	WithUpdate(Update).
+	WithDraw(Draw)
 
 func Start(app *application.Application) error {
 	if err := RegisterApplicationResources(app); err != nil {
@@ -120,4 +122,12 @@ func SetupElements(app *application.Application) error {
 	}
 
 	return nil
+}
+
+func Draw(app *application.Application, screen *ebiten.Image) error {
+	return ecs.ProcessRenderSystems(screen, app.RenderMatrix())
+}
+
+func Update(app *application.Application, deltaSeconds, fixedDeltaSeconds float64, frames int) error {
+	return ecs.ProcessUpdateSystems(deltaSeconds, fixedDeltaSeconds, frames)
 }
