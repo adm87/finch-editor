@@ -8,17 +8,14 @@
 !README.md
 !LICENSE
 
+!application/
+!application/**/*
+
 !cmd/
 !cmd/**/*
-
-!components/
-!components/**/*
 
 !data/
 !data/**/*
 
 !editor/
 !editor/**/*
-
-!systems/
-!systems/**/*

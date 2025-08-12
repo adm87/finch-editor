@@ -1,4 +1,4 @@
-package systems
+package grid
 
 import (
 	"image/color"
@@ -6,76 +6,47 @@ import (
 
 	"github.com/adm87/finch-application/config"
 	"github.com/adm87/finch-core/ecs"
-	"github.com/adm87/finch-editor/components"
+	"github.com/adm87/finch-core/errors"
+	"github.com/adm87/finch-editor/editor/camera"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
-const (
-	CellSize    float32 = 32.0
-	MaxGridSize float32 = 16.0
-	MinGridSize float32 = 0.25
-)
+var GridRenderingSystemType = ecs.NewSystemType[*GridRenderingSystem]()
 
 var (
-	EditorGridColor          = []float32{1.0, 1.0, 1.0, 0.5}
-	EditorGridRendererType   = ecs.NewSystemType[*EditorGridRenderer]()
-	EditorGridRendererFilter = []ecs.ComponentType{
-		components.CameraComponentType,
-	}
+	ErrAmbiguousGridRenderingEntities = errors.NewAmbiguousError("grid rendering entities")
+	ErrGridRenderingEntityNotFound    = errors.NewNotFoundError("grid rendering entity")
 )
 
-type ScaleGrid struct {
-	Scale float32
-	Size  float32
-}
-
-type EditorGridRenderer struct {
+type GridRenderingSystem struct {
 	img    *ebiten.Image
 	window *config.Window
-	grids  []ScaleGrid
 }
 
-func NewEditorGridRenderer(window *config.Window) *EditorGridRenderer {
+func NewGridRenderingSystem(window *config.Window) *GridRenderingSystem {
 	img := ebiten.NewImage(1, 1)
 	img.Fill(color.White)
-	return &EditorGridRenderer{
+	return &GridRenderingSystem{
 		img:    img,
 		window: window,
-		grids: []ScaleGrid{
-			{Scale: 0.01},
-			{Scale: 0.1},
-			{Scale: 1.0},
-			{Scale: 10.0},
-			{Scale: 100.0},
-		},
 	}
 }
 
-func (s *EditorGridRenderer) Type() ecs.SystemType {
-	return EditorGridRendererType
+func (s *GridRenderingSystem) Type() ecs.SystemType {
+	return GridRenderingSystemType
 }
 
-func (s *EditorGridRenderer) Render(world *ecs.ECSWorld, buffer *ebiten.Image, view ebiten.GeoM) error {
-	entities := world.FilterEntitiesByComponents(EditorGridRendererFilter...)
-
-	if len(entities) == 0 {
-		return nil
+func (s *GridRenderingSystem) Render(world *ecs.ECSWorld, buffer *ebiten.Image, view ebiten.GeoM) error {
+	entity, err := internal_get_rendering_entity(world)
+	if err != nil {
+		return err
 	}
 
-	if len(entities) > 1 {
-		return ErrAmbiguousCameras
-	}
+	gridComponent, _, _ := ecs.GetComponent[*GridComponent](world, entity, GridComponentType)
+	cameraComponent, _, _ := ecs.GetComponent[*camera.CameraComponent](world, entity, camera.CameraComponentType)
 
-	entity, _ := entities.First()
-	camera, _, _ := ecs.GetComponent[*components.CameraComponent](world, entity, components.CameraComponentType)
-
-	zoom := camera.Zoom()
-
-	invView := view
-	invView.Invert()
-
-	paths := s.CalculateGridPaths(zoom, view, invView)
+	paths := s.CalculateGridPaths(gridComponent, cameraComponent, view)
 	for path, opacity := range paths {
 		vertices, indices := path.AppendVerticesAndIndicesForStroke(nil, nil, &vector.StrokeOptions{
 			Width: 1,
@@ -86,10 +57,10 @@ func (s *EditorGridRenderer) Render(world *ecs.ECSWorld, buffer *ebiten.Image, v
 		}
 
 		for i := range vertices {
-			vertices[i].ColorR = EditorGridColor[0]
-			vertices[i].ColorG = EditorGridColor[1]
-			vertices[i].ColorB = EditorGridColor[2]
-			vertices[i].ColorA = EditorGridColor[3] * opacity
+			vertices[i].ColorR = gridComponent.LineColor[0]
+			vertices[i].ColorG = gridComponent.LineColor[1]
+			vertices[i].ColorB = gridComponent.LineColor[2]
+			vertices[i].ColorA = gridComponent.LineColor[3] * opacity
 		}
 
 		buffer.DrawTriangles(vertices, indices, s.img, &ebiten.DrawTrianglesOptions{})
@@ -98,22 +69,22 @@ func (s *EditorGridRenderer) Render(world *ecs.ECSWorld, buffer *ebiten.Image, v
 	return nil
 }
 
-func (s *EditorGridRenderer) CalculateGridPaths(zoom float64, view, invView ebiten.GeoM) map[*vector.Path]float32 {
+func (s *GridRenderingSystem) CalculateGridPaths(gridComponent *GridComponent, cameraComponent *camera.CameraComponent, view ebiten.GeoM) map[*vector.Path]float32 {
 	paths := make(map[*vector.Path]float32)
 
-	for _, grid := range s.grids {
-		spacing := CellSize * grid.Scale
-		grid.Size = spacing / float32(zoom)
+	for _, grid := range gridComponent.GridStates {
+		spacing := gridComponent.CellSize * grid.Scale
+		grid.Size = spacing / float32(cameraComponent.Zoom)
 
-		i := grid.Size / CellSize
-		rangeSize := MaxGridSize - MinGridSize
+		i := grid.Size / gridComponent.CellSize
+		rangeSize := gridComponent.MaxGridSize - gridComponent.MinGridSize
 		if rangeSize == 0 {
 			continue
 		}
 
 		// Calculate opacity based on how close i is to the min/max
-		dMin := (i - MinGridSize) / rangeSize
-		dMax := (MaxGridSize - i) / rangeSize
+		dMin := (i - gridComponent.MinGridSize) / rangeSize
+		dMax := (gridComponent.MaxGridSize - i) / rangeSize
 		opacity := dMin * dMax * 4
 
 		if opacity <= 0.01 {
@@ -125,14 +96,14 @@ func (s *EditorGridRenderer) CalculateGridPaths(zoom float64, view, invView ebit
 			opacity = 0
 		}
 
-		path := s.GetGridPath(spacing, view, invView)
+		path := s.GetGridPath(spacing, view, cameraComponent.WorldMatrix())
 		paths[&path] = opacity
 	}
 
 	return paths
 }
 
-func (s *EditorGridRenderer) GetGridPath(spacing float32, view ebiten.GeoM, invView ebiten.GeoM) vector.Path {
+func (s *GridRenderingSystem) GetGridPath(spacing float32, view ebiten.GeoM, invView ebiten.GeoM) vector.Path {
 	left, right, top, bottom := s.GetCorners(spacing, view, invView)
 
 	path := vector.Path{}
@@ -153,7 +124,7 @@ func (s *EditorGridRenderer) GetGridPath(spacing float32, view ebiten.GeoM, invV
 	return path
 }
 
-func (s *EditorGridRenderer) GetCorners(spacing float32, view ebiten.GeoM, invView ebiten.GeoM) (float32, float32, float32, float32) {
+func (s *GridRenderingSystem) GetCorners(spacing float32, view ebiten.GeoM, invView ebiten.GeoM) (float32, float32, float32, float32) {
 	width := float32(s.window.ScreenWidth)
 	height := float32(s.window.ScreenHeight)
 
@@ -173,4 +144,27 @@ func (s *EditorGridRenderer) GetCorners(spacing float32, view ebiten.GeoM, invVi
 	endY := float32(math.Ceil(float64(bottom/spacing)) * float64(spacing))
 
 	return startX, endX, startY, endY
+}
+
+func internal_get_rendering_entity(world *ecs.ECSWorld) (ecs.Entity, error) {
+	set := world.FilterEntitiesByComponents(
+		camera.CameraComponentType,
+		GridComponentType,
+	)
+
+	count := len(set)
+
+	if count == 0 {
+		return ecs.NilEntity, ErrGridRenderingEntityNotFound
+	}
+
+	if count > 1 {
+		return ecs.NilEntity, ErrAmbiguousGridRenderingEntities
+	}
+
+	if entity, ok := set.First(); ok {
+		return entity, nil
+	}
+
+	return ecs.NilEntity, nil
 }

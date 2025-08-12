@@ -2,7 +2,7 @@ package main
 
 import (
 	finch "github.com/adm87/finch-application/application"
-	"github.com/adm87/finch-editor/editor"
+	editor "github.com/adm87/finch-editor/application"
 )
 
 func main() {
