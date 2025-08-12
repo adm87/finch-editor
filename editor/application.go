@@ -18,6 +18,8 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+var world = ecs.NewWorld()
+
 var Application = application.NewApplicationWithConfig(
 	&application.ApplicationConfig{
 		Metadata: &config.Metadata{
@@ -43,8 +45,8 @@ var Application = application.NewApplicationWithConfig(
 	}).
 	WithStartup(Start).
 	WithShutdown(Shutdown).
-	WithUpdate(Update).
-	WithDraw(Draw)
+	WithDraw(Draw).
+	WithUpdate(Update)
 
 func Start(app *application.Application) error {
 	if err := RegisterApplicationResources(app); err != nil {
@@ -82,14 +84,14 @@ func RegisterSystems(app *application.Application) error {
 	// Register EarlyUpdate systems
 
 	// Register LateUpdate systems
-	if err := ecs.RegisterSystems(map[ecs.System]int{
+	if err := world.RegisterSystems(map[ecs.System]int{
 		systems.NewCameraLateUpdateSystem(app): 0,
 	}); err != nil {
 		return err
 	}
 
 	// Register Rendering systems
-	if err := ecs.RegisterSystems(map[ecs.System]int{
+	if err := world.RegisterSystems(map[ecs.System]int{
 		systems.NewEditorGridRenderer(app.Config().Window): 0,
 		rendering.NewRenderSystem():                        1,
 	}); err != nil {
@@ -107,7 +109,7 @@ func SetupElements(app *application.Application) error {
 	tile0000Renderer := sprites.NewSpriteRenderer(img, geometry.Point64{X: 0.5, Y: 0.5})
 
 	// Test sprite entity
-	if _, err := ecs.NewEntityWithComponents(
+	if _, err := world.NewEntityWithComponents(
 		transform.NewTransformComponent(),
 		rendering.NewRenderComponent(tile0000Renderer, 0),
 	); err != nil {
@@ -115,7 +117,7 @@ func SetupElements(app *application.Application) error {
 	}
 
 	// Camera entity
-	if _, err := ecs.NewEntityWithComponents(
+	if _, err := world.NewEntityWithComponents(
 		components.NewCameraComponent(),
 	); err != nil {
 		return err
@@ -125,9 +127,9 @@ func SetupElements(app *application.Application) error {
 }
 
 func Draw(app *application.Application, screen *ebiten.Image) error {
-	return ecs.ProcessRenderSystems(screen, app.RenderMatrix())
+	return world.ProcessRenderSystems(screen)
 }
 
 func Update(app *application.Application, deltaSeconds, fixedDeltaSeconds float64, frames int) error {
-	return ecs.ProcessUpdateSystems(deltaSeconds, fixedDeltaSeconds, frames)
+	return world.ProcessUpdateSystems(deltaSeconds, fixedDeltaSeconds, frames)
 }

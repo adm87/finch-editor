@@ -6,7 +6,6 @@ import (
 
 	"github.com/adm87/finch-application/config"
 	"github.com/adm87/finch-core/ecs"
-	"github.com/adm87/finch-core/hash"
 	"github.com/adm87/finch-editor/components"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
@@ -57,11 +56,9 @@ func (s *EditorGridRenderer) Type() ecs.SystemType {
 	return EditorGridRendererType
 }
 
-func (s *EditorGridRenderer) Filter() []ecs.ComponentType {
-	return EditorGridRendererFilter
-}
+func (s *EditorGridRenderer) Render(world *ecs.ECSWorld, buffer *ebiten.Image, view ebiten.GeoM) error {
+	entities := world.FilterEntitiesByComponents(EditorGridRendererFilter...)
 
-func (s *EditorGridRenderer) Render(entities hash.HashSet[ecs.Entity], buffer *ebiten.Image, view ebiten.GeoM) error {
 	if len(entities) == 0 {
 		return nil
 	}
@@ -71,7 +68,7 @@ func (s *EditorGridRenderer) Render(entities hash.HashSet[ecs.Entity], buffer *e
 	}
 
 	entity, _ := entities.First()
-	camera, _, _ := ecs.GetComponent[*components.CameraComponent](entity, components.CameraComponentType)
+	camera, _, _ := ecs.GetComponent[*components.CameraComponent](world, entity, components.CameraComponentType)
 
 	zoom := camera.Zoom()
 

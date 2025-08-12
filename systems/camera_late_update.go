@@ -5,7 +5,6 @@ import (
 	"github.com/adm87/finch-core/ecs"
 	"github.com/adm87/finch-core/errors"
 	"github.com/adm87/finch-core/geometry"
-	"github.com/adm87/finch-core/hash"
 	"github.com/adm87/finch-editor/components"
 )
 
@@ -35,11 +34,9 @@ func (s *CameraLateUpdateSystem) Type() ecs.SystemType {
 	return CameraLateUpdateSystemType
 }
 
-func (s *CameraLateUpdateSystem) Filter() []ecs.ComponentType {
-	return CameraLateUpdateSystemFilter
-}
+func (s *CameraLateUpdateSystem) LateUpdate(world *ecs.ECSWorld, deltaSeconds float64) error {
+	entities := world.FilterEntitiesByComponents(CameraLateUpdateSystemFilter...)
 
-func (s *CameraLateUpdateSystem) LateUpdate(entities hash.HashSet[ecs.Entity], deltaSeconds float64) error {
 	if len(entities) == 0 {
 		return ErrCameraNotFound
 	}
@@ -49,7 +46,7 @@ func (s *CameraLateUpdateSystem) LateUpdate(entities hash.HashSet[ecs.Entity], d
 	}
 
 	entity, _ := entities.First()
-	camera, _, err := ecs.GetComponent[*components.CameraComponent](entity, components.CameraComponentType)
+	camera, _, err := ecs.GetComponent[*components.CameraComponent](world, entity, components.CameraComponentType)
 	if err != nil {
 		return err
 	}
@@ -65,6 +62,6 @@ func (s *CameraLateUpdateSystem) LateUpdate(entities hash.HashSet[ecs.Entity], d
 	viewMatrix := camera.WorldMatrix()
 	viewMatrix.Invert()
 
-	s.app.SetRenderMatrix(viewMatrix)
+	world.SetRenderMatrix(viewMatrix)
 	return nil
 }
