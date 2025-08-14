@@ -5,25 +5,15 @@ import (
 	finmsg "github.com/adm87/finch-application/messages"
 	"github.com/adm87/finch-core/ecs"
 	"github.com/adm87/finch-editor/camera"
-	"github.com/adm87/finch-editor/data"
 	"github.com/adm87/finch-editor/grid"
+	"github.com/adm87/finch-rendering/rendering"
 )
 
 func Register(app *finapp.Application, world *ecs.World) error {
-	if err := RegisterResourceFilesystems(app, world); err != nil {
-		return err
-	}
 	if err := RegisterECSSystems(app, world); err != nil {
 		return err
 	}
 	if err := RegisterMessageHandlers(app, world); err != nil {
-		return err
-	}
-	return nil
-}
-
-func RegisterResourceFilesystems(app *finapp.Application, world *ecs.World) error {
-	if err := app.Cache().AddFilesystem("embedded", data.Embedded); err != nil {
 		return err
 	}
 	return nil
@@ -50,6 +40,7 @@ func RegisterECSSystems(app *finapp.Application, world *ecs.World) error {
 		// Rendering Systems
 		// =================================================================
 		grid.NewGridRenderingSystem(app.Config().Window): 0,
+		rendering.NewRenderSystem():                      1,
 	})
 }
 

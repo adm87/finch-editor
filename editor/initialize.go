@@ -1,38 +1,42 @@
 package editor
 
 import (
-	"path/filepath"
-	"strings"
-
-	fin "github.com/adm87/finch-application/application"
+	finapp "github.com/adm87/finch-application/application"
+	"github.com/adm87/finch-core/components/transform"
 	"github.com/adm87/finch-core/ecs"
-	"github.com/adm87/finch-core/linq"
+	"github.com/adm87/finch-core/geometry"
 	"github.com/adm87/finch-editor/camera"
 	"github.com/adm87/finch-editor/grid"
-	"github.com/adm87/finch-resources/manifest"
+	"github.com/adm87/finch-rendering/renderers/sprites"
+	"github.com/adm87/finch-rendering/rendering"
 )
 
-func Initialize(app *fin.Application, world *ecs.World) error {
-	if err := LoadDefaultResources(app); err != nil {
-		return err
-	}
+func Initialize(app *finapp.Application, world *ecs.World) error {
 	if _, err := camera.NewCameraEntity(world); err != nil {
 		return err
 	}
 	if _, err := grid.NewEditorGridEntity(world); err != nil {
 		return err
 	}
-	return nil
-}
 
-func LoadDefaultResources(app *fin.Application) error {
-	embeddedManifest, err := manifest.GetSubManifest(app.Cache().Manifest(), "embedded")
+	tile0000Img, err := app.Cache().Images().Get("tile0000")
 	if err != nil {
 		return err
 	}
-	names := linq.SelectKeys(embeddedManifest, func(key string, value manifest.ResourceMetadata) bool {
-		parts := strings.Split(value.Path, string(filepath.Separator))
-		return len(parts) > 1 && parts[0] == "defaults"
-	})
-	return app.Cache().Load(names...)
+
+	spriteRenderer := sprites.NewSpriteRenderer(
+		tile0000Img, geometry.Point64{
+			X: 0.5,
+			Y: 0.5,
+		},
+	)
+
+	if _, err := world.NewEntityWithComponents(
+		rendering.NewRenderComponent(spriteRenderer, 0),
+		transform.NewTransformComponent(),
+	); err != nil {
+		return err
+	}
+
+	return nil
 }
