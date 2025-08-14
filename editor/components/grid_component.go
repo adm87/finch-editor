@@ -1,4 +1,4 @@
-package grid
+package components
 
 import "github.com/adm87/finch-core/ecs"
 
@@ -34,7 +34,7 @@ func NewGridComponent() *GridComponent {
 			1.0,
 			1.0,
 			1.0,
-			0.5,
+			0.25,
 		},
 		GridStates: []GridState{
 			{Scale: 0.01},

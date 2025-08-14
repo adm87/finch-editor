@@ -28,8 +28,10 @@ var Application = finch.NewApplicationWithConfig(
 		},
 		Window: &config.Window{
 			Title:           "Finch Editor",
-			Width:           800,
-			Height:          600,
+			Width:           1240,
+			Height:          720,
+			ScreenWidth:     800,
+			ScreenHeight:    600,
 			ResizeMode:      ebiten.WindowResizingModeEnabled,
 			RenderScale:     1.0,
 			Fullscreen:      false,
@@ -47,7 +49,7 @@ func Start(app *finch.Application) error {
 	// Registration
 	// =================================================================
 
-	if err := editor.RegisterSystems(app, world); err != nil {
+	if err := editor.Register(app, world); err != nil {
 		return err
 	}
 
@@ -55,7 +57,7 @@ func Start(app *finch.Application) error {
 	// Initialization
 	// =================================================================
 
-	if err := editor.InitializeWorld(app, world); err != nil {
+	if err := editor.Initialize(app, world); err != nil {
 		return err
 	}
 
@@ -80,5 +82,6 @@ func Update(app *finch.Application, deltaSeconds, fixedDeltaSeconds float64, fra
 	if err := world.ProcessUpdateSystems(deltaSeconds, fixedDeltaSeconds, frames); err != nil {
 		return err
 	}
+
 	return nil
 }

@@ -1,17 +1,20 @@
-package camera
+package components
 
 import (
 	"github.com/adm87/finch-core/components/transform"
 	"github.com/adm87/finch-core/ecs"
-	"github.com/adm87/finch-core/errors"
-	"github.com/adm87/finch-core/geometry"
 )
 
 var CameraComponentType = ecs.NewComponentType[*CameraComponent]()
 
 type CameraComponent struct {
 	*transform.TransformComponent
-	Zoom float64
+
+	Zoom       float64
+	ZoomFactor float64
+
+	DragStartThreshold float64
+	IsDragging         bool
 }
 
 func (c *CameraComponent) Type() ecs.ComponentType {
@@ -22,13 +25,12 @@ func (c *CameraComponent) Dispose() {
 	c.TransformComponent = nil
 }
 
-func (c *CameraComponent) SetScale(scale geometry.Point64) {
-	panic(errors.NewConflictError("do not set camera scale directly. Use Zoom instead"))
-}
-
 func NewCameraComponent() *CameraComponent {
 	return &CameraComponent{
 		TransformComponent: transform.NewTransformComponent(),
 		Zoom:               1.0,
+		ZoomFactor:         1.0,
+		DragStartThreshold: 5.0,
+		IsDragging:         false,
 	}
 }

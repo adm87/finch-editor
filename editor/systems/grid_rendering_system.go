@@ -1,4 +1,4 @@
-package grid
+package systems
 
 import (
 	"image/color"
@@ -7,7 +7,7 @@ import (
 	"github.com/adm87/finch-application/config"
 	"github.com/adm87/finch-core/ecs"
 	"github.com/adm87/finch-core/errors"
-	"github.com/adm87/finch-editor/editor/camera"
+	"github.com/adm87/finch-editor/editor/components"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
@@ -43,8 +43,8 @@ func (s *GridRenderingSystem) Render(world *ecs.ECSWorld, buffer *ebiten.Image, 
 		return err
 	}
 
-	gridComponent, _, _ := ecs.GetComponent[*GridComponent](world, entity, GridComponentType)
-	cameraComponent, _, _ := ecs.GetComponent[*camera.CameraComponent](world, entity, camera.CameraComponentType)
+	gridComponent, _, _ := ecs.GetComponent[*components.GridComponent](world, entity, components.GridComponentType)
+	cameraComponent, _, _ := ecs.GetComponent[*components.CameraComponent](world, entity, components.CameraComponentType)
 
 	paths := s.CalculateGridPaths(gridComponent, cameraComponent, view)
 	for path, opacity := range paths {
@@ -69,7 +69,7 @@ func (s *GridRenderingSystem) Render(world *ecs.ECSWorld, buffer *ebiten.Image, 
 	return nil
 }
 
-func (s *GridRenderingSystem) CalculateGridPaths(gridComponent *GridComponent, cameraComponent *camera.CameraComponent, view ebiten.GeoM) map[*vector.Path]float32 {
+func (s *GridRenderingSystem) CalculateGridPaths(gridComponent *components.GridComponent, cameraComponent *components.CameraComponent, view ebiten.GeoM) map[*vector.Path]float32 {
 	paths := make(map[*vector.Path]float32)
 
 	for _, grid := range gridComponent.GridStates {
@@ -148,8 +148,8 @@ func (s *GridRenderingSystem) GetCorners(spacing float32, view ebiten.GeoM, invV
 
 func internal_get_rendering_entity(world *ecs.ECSWorld) (ecs.Entity, error) {
 	set := world.FilterEntitiesByComponents(
-		camera.CameraComponentType,
-		GridComponentType,
+		components.CameraComponentType,
+		components.GridComponentType,
 	)
 
 	count := len(set)

@@ -4,11 +4,10 @@ import (
 	finch "github.com/adm87/finch-application/application"
 	"github.com/adm87/finch-core/components/transform"
 	"github.com/adm87/finch-core/ecs"
-	"github.com/adm87/finch-editor/editor/camera"
-	"github.com/adm87/finch-editor/editor/grid"
+	"github.com/adm87/finch-editor/editor/components"
 )
 
-func InitializeWorld(app *finch.Application, world *ecs.ECSWorld) error {
+func Initialize(app *finch.Application, world *ecs.ECSWorld) error {
 	if err := internal_setup_camera(world); err != nil {
 		return err
 	}
@@ -19,10 +18,12 @@ func InitializeWorld(app *finch.Application, world *ecs.ECSWorld) error {
 }
 
 func internal_setup_camera(world *ecs.ECSWorld) error {
-	_, err := world.NewEntityWithComponents(
-		camera.NewCameraComponent(),
-		grid.NewGridComponent(),
+	entity, err := world.NewEntityWithComponents(
+		components.NewCameraComponent(),
+		components.NewGridComponent(),
 	)
+	cameraComponent, _, _ := ecs.GetComponent[*components.CameraComponent](world, entity, components.CameraComponentType)
+	cameraComponent.ZoomFactor = 0.1
 	return err
 }
 
