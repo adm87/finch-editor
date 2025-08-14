@@ -28,7 +28,6 @@ func RegisterSystems(app *finch.Application, world *ecs.ECSWorld) error {
 		// =================================================================
 		// Late Update Systems
 		// =================================================================
-		systems.NewCameraFinalization(app.Config().Window): 1000,
 
 		// =================================================================
 		// Rendering Systems

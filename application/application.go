@@ -45,22 +45,12 @@ var Application = finch.NewApplicationWithConfig(
 	WithUpdate(Update)
 
 func Start(app *finch.Application) error {
-	// =================================================================
-	// Registration
-	// =================================================================
-
 	if err := editor.Register(app, world); err != nil {
 		return err
 	}
-
-	// =================================================================
-	// Initialization
-	// =================================================================
-
 	if err := editor.Initialize(app, world); err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -82,6 +72,5 @@ func Update(app *finch.Application, deltaSeconds, fixedDeltaSeconds float64, fra
 	if err := world.ProcessUpdateSystems(deltaSeconds, fixedDeltaSeconds, frames); err != nil {
 		return err
 	}
-
 	return nil
 }

@@ -5,6 +5,7 @@ import (
 	"math"
 
 	"github.com/adm87/finch-application/config"
+	"github.com/adm87/finch-core/components/camera"
 	"github.com/adm87/finch-core/ecs"
 	"github.com/adm87/finch-core/errors"
 	"github.com/adm87/finch-editor/editor/components"
@@ -37,14 +38,21 @@ func (s *GridRenderingSystem) Type() ecs.SystemType {
 	return GridRenderingSystemType
 }
 
-func (s *GridRenderingSystem) Render(world *ecs.ECSWorld, buffer *ebiten.Image, view ebiten.GeoM) error {
-	entity, err := internal_get_rendering_entity(world)
+func (s *GridRenderingSystem) Render(world *ecs.ECSWorld, buffer *ebiten.Image) error {
+	gridEntity, err := internal_get_rendering_entity(world)
 	if err != nil {
 		return err
 	}
 
-	gridComponent, _, _ := ecs.GetComponent[*components.GridComponent](world, entity, components.GridComponentType)
-	cameraComponent, _, _ := ecs.GetComponent[*components.CameraComponent](world, entity, components.CameraComponentType)
+	gridComponent, _, _ := ecs.GetComponent[*components.GridComponent](world, gridEntity, components.GridComponentType)
+
+	cameraComponent, err := camera.FindCameraComponent(world)
+	if err != nil {
+		return err
+	}
+
+	view := cameraComponent.WorldMatrix()
+	view.Invert()
 
 	paths := s.CalculateGridPaths(gridComponent, cameraComponent, view)
 	for path, opacity := range paths {
@@ -69,7 +77,7 @@ func (s *GridRenderingSystem) Render(world *ecs.ECSWorld, buffer *ebiten.Image, 
 	return nil
 }
 
-func (s *GridRenderingSystem) CalculateGridPaths(gridComponent *components.GridComponent, cameraComponent *components.CameraComponent, view ebiten.GeoM) map[*vector.Path]float32 {
+func (s *GridRenderingSystem) CalculateGridPaths(gridComponent *components.GridComponent, cameraComponent *camera.CameraComponent, view ebiten.GeoM) map[*vector.Path]float32 {
 	paths := make(map[*vector.Path]float32)
 
 	for _, grid := range gridComponent.GridStates {
@@ -148,7 +156,6 @@ func (s *GridRenderingSystem) GetCorners(spacing float32, view ebiten.GeoM, invV
 
 func internal_get_rendering_entity(world *ecs.ECSWorld) (ecs.Entity, error) {
 	set := world.FilterEntitiesByComponents(
-		components.CameraComponentType,
 		components.GridComponentType,
 	)
 

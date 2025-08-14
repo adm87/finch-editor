@@ -1,6 +1,7 @@
 package systems
 
 import (
+	"github.com/adm87/finch-core/components/camera"
 	"github.com/adm87/finch-core/ecs"
 	"github.com/adm87/finch-core/geometry"
 	"github.com/adm87/finch-core/types"
@@ -24,7 +25,7 @@ func (s *CameraPan) Type() ecs.SystemType {
 }
 
 func (s *CameraPan) EarlyUpdate(world *ecs.ECSWorld, deltaSeconds float64) error {
-	cameraComponent, err := find_camera_component(world)
+	cameraComponent, err := camera.FindCameraComponent(world)
 	if err != nil {
 		return err
 	}
