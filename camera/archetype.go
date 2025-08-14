@@ -24,6 +24,7 @@ func FindCameraEntities(world *ecs.ECSWorld) hash.HashSet[ecs.Entity] {
 	return world.FilterEntitiesByComponents(
 		fcam.CameraComponentType,
 		CameraDragComponentType,
+		CameraPanComponentType,
 	)
 }
 
