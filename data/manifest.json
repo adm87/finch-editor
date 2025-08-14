@@ -1,1 +1,1 @@
-{"tile_0000":{"root":"assets","path":"images/tile_0000.png","size":254}}
+{"10x10":{"root":"embedded","path":"defaults/10x10.png","size":172},"tile_0000":{"root":"assets","path":"images/tile_0000.png","size":254}}

@@ -5,11 +5,15 @@ import (
 	finmsg "github.com/adm87/finch-application/messages"
 	"github.com/adm87/finch-core/ecs"
 	"github.com/adm87/finch-editor/camera"
+	"github.com/adm87/finch-editor/data"
 	"github.com/adm87/finch-editor/grid"
 )
 
 func Register(app *finapp.Application, world *ecs.World) error {
-	if err := RegisterSystems(app, world); err != nil {
+	if err := RegisterResourceFilesystems(app, world); err != nil {
+		return err
+	}
+	if err := RegisterECSSystems(app, world); err != nil {
 		return err
 	}
 	if err := RegisterMessageHandlers(app, world); err != nil {
@@ -18,7 +22,14 @@ func Register(app *finapp.Application, world *ecs.World) error {
 	return nil
 }
 
-func RegisterSystems(app *finapp.Application, world *ecs.World) error {
+func RegisterResourceFilesystems(app *finapp.Application, world *ecs.World) error {
+	if err := app.Cache().AddFilesystem("embedded", data.Embedded); err != nil {
+		return err
+	}
+	return nil
+}
+
+func RegisterECSSystems(app *finapp.Application, world *ecs.World) error {
 	return world.RegisterSystems(map[ecs.System]int{
 		// =================================================================
 		// Early Update Systems
