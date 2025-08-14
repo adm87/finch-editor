@@ -11,6 +11,12 @@
 !application/
 !application/**/*
 
+!archetypes/
+!archetypes/**/*
+
+!camera/
+!camera/**/*
+
 !cmd/
 !cmd/**/*
 
@@ -19,3 +25,6 @@
 
 !editor/
 !editor/**/*
+
+!grid/
+!grid/**/*

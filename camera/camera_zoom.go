@@ -1,7 +1,6 @@
-package systems
+package camera
 
 import (
-	"github.com/adm87/finch-core/components/camera"
 	"github.com/adm87/finch-core/ecs"
 	"github.com/adm87/finch-core/geometry"
 	"github.com/adm87/finch-core/math"
@@ -27,12 +26,17 @@ func (s *CameraZoom) Type() ecs.SystemType {
 }
 
 func (s *CameraZoom) EarlyUpdate(world *ecs.ECSWorld, deltaSeconds float64) error {
-	cameraComponent, err := camera.FindCameraComponent(world)
+	cameraComponent, err := FindCameraComponent(world)
 	if err != nil {
 		return err
 	}
 
-	if cameraComponent.IsDragging {
+	dragComponent, err := FindCameraDragComponent(world)
+	if err != nil {
+		return err
+	}
+
+	if dragComponent.IsDragging {
 		return nil
 	}
 

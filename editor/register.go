@@ -3,7 +3,8 @@ package editor
 import (
 	finch "github.com/adm87/finch-application/application"
 	"github.com/adm87/finch-core/ecs"
-	"github.com/adm87/finch-editor/editor/systems"
+	"github.com/adm87/finch-editor/camera"
+	"github.com/adm87/finch-editor/grid"
 )
 
 func Register(app *finch.Application, world *ecs.ECSWorld) error {
@@ -18,8 +19,8 @@ func RegisterSystems(app *finch.Application, world *ecs.ECSWorld) error {
 		// =================================================================
 		// Early Update Systems
 		// =================================================================
-		systems.NewCameraZoom(): 0,
-		systems.NewCameraPan():  1,
+		camera.NewCameraZoom(): 0,
+		camera.NewCameraPan():  1,
 
 		// =================================================================
 		// Fixed Update Systems
@@ -32,6 +33,6 @@ func RegisterSystems(app *finch.Application, world *ecs.ECSWorld) error {
 		// =================================================================
 		// Rendering Systems
 		// =================================================================
-		systems.NewGridRenderingSystem(app.Config().Window): 0,
+		grid.NewGridRenderingSystem(app.Config().Window): 0,
 	})
 }

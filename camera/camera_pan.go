@@ -1,7 +1,6 @@
-package systems
+package camera
 
 import (
-	"github.com/adm87/finch-core/components/camera"
 	"github.com/adm87/finch-core/ecs"
 	"github.com/adm87/finch-core/geometry"
 	"github.com/adm87/finch-core/types"
@@ -25,7 +24,12 @@ func (s *CameraPan) Type() ecs.SystemType {
 }
 
 func (s *CameraPan) EarlyUpdate(world *ecs.ECSWorld, deltaSeconds float64) error {
-	cameraComponent, err := camera.FindCameraComponent(world)
+	cameraComponent, err := FindCameraComponent(world)
+	if err != nil {
+		return err
+	}
+
+	dragComponent, err := FindCameraDragComponent(world)
 	if err != nil {
 		return err
 	}
@@ -43,17 +47,17 @@ func (s *CameraPan) EarlyUpdate(world *ecs.ECSWorld, deltaSeconds float64) error
 		cameraPosition := cameraComponent.Position()
 		downPosition := s.downPosition.Value()
 
-		if cameraPosition.DistanceTo(downPosition) > cameraComponent.DragStartThreshold*cameraComponent.Zoom {
-			cameraComponent.IsDragging = true
+		if cameraPosition.DistanceTo(downPosition) > dragComponent.DragStartThreshold*cameraComponent.Zoom {
+			dragComponent.IsDragging = true
 		}
 	} else {
 		if s.downPosition.IsValid() {
 			s.downPosition.Invalidate()
 		}
-		cameraComponent.IsDragging = false
+		dragComponent.IsDragging = false
 	}
 
-	if cameraComponent.IsDragging {
+	if dragComponent.IsDragging {
 		cameraPosition := cameraComponent.Position()
 		downPosition := s.downPosition.Value()
 
@@ -63,6 +67,10 @@ func (s *CameraPan) EarlyUpdate(world *ecs.ECSWorld, deltaSeconds float64) error
 		cameraComponent.SetPosition(geometry.Point64{
 			X: cameraPosition.X - deltaX,
 			Y: cameraPosition.Y - deltaY,
+		})
+		dragComponent.DragVector.SetValue(geometry.Point64{
+			X: deltaX,
+			Y: deltaY,
 		})
 	}
 

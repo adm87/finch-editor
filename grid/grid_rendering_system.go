@@ -1,4 +1,4 @@
-package systems
+package grid
 
 import (
 	"image/color"
@@ -8,7 +8,6 @@ import (
 	"github.com/adm87/finch-core/components/camera"
 	"github.com/adm87/finch-core/ecs"
 	"github.com/adm87/finch-core/errors"
-	"github.com/adm87/finch-editor/editor/components"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
@@ -39,12 +38,10 @@ func (s *GridRenderingSystem) Type() ecs.SystemType {
 }
 
 func (s *GridRenderingSystem) Render(world *ecs.ECSWorld, buffer *ebiten.Image) error {
-	gridEntity, err := internal_get_rendering_entity(world)
+	gridComponent, err := FindGridComponent(world)
 	if err != nil {
 		return err
 	}
-
-	gridComponent, _, _ := ecs.GetComponent[*components.GridComponent](world, gridEntity, components.GridComponentType)
 
 	cameraComponent, err := camera.FindCameraComponent(world)
 	if err != nil {
@@ -77,7 +74,7 @@ func (s *GridRenderingSystem) Render(world *ecs.ECSWorld, buffer *ebiten.Image) 
 	return nil
 }
 
-func (s *GridRenderingSystem) CalculateGridPaths(gridComponent *components.GridComponent, cameraComponent *camera.CameraComponent, view ebiten.GeoM) map[*vector.Path]float32 {
+func (s *GridRenderingSystem) CalculateGridPaths(gridComponent *GridComponent, cameraComponent *camera.CameraComponent, view ebiten.GeoM) map[*vector.Path]float32 {
 	paths := make(map[*vector.Path]float32)
 
 	for _, grid := range gridComponent.GridStates {
@@ -135,43 +132,35 @@ func (s *GridRenderingSystem) GetGridPath(spacing float32, view ebiten.GeoM, inv
 func (s *GridRenderingSystem) GetCorners(spacing float32, view ebiten.GeoM, invView ebiten.GeoM) (float32, float32, float32, float32) {
 	width := float32(s.window.ScreenWidth)
 	height := float32(s.window.ScreenHeight)
+	corners := [4][2]float64{
+		{0, 0},
+		{float64(width), 0},
+		{0, float64(height)},
+		{float64(width), float64(height)},
+	}
+	minX, maxX := corners[0][0], corners[0][0]
+	minY, maxY := corners[0][1], corners[0][1]
 
-	topLeftX, topLeftY := invView.Apply(0, 0)
-	topRightX, topRightY := invView.Apply(float64(width), 0)
-	bottomLeftX, bottomLeftY := invView.Apply(0, float64(height))
-	bottomRightX, bottomRightY := invView.Apply(float64(width), float64(height))
+	for _, c := range corners {
+		x, y := invView.Apply(c[0], c[1])
+		if x < minX {
+			minX = x
+		}
+		if x > maxX {
+			maxX = x
+		}
+		if y < minY {
+			minY = y
+		}
+		if y > maxY {
+			maxY = y
+		}
+	}
 
-	left := float32(math.Min(math.Min(topLeftX, topRightX), math.Min(bottomLeftX, bottomRightX)))
-	right := float32(math.Max(math.Max(topLeftX, topRightX), math.Max(bottomLeftX, bottomRightX)))
-	top := float32(math.Min(math.Min(topLeftY, topRightY), math.Min(bottomLeftY, bottomRightY)))
-	bottom := float32(math.Max(math.Max(topLeftY, topRightY), math.Max(bottomLeftY, bottomRightY)))
-
-	startX := float32(math.Floor(float64(left/spacing)) * float64(spacing))
-	endX := float32(math.Ceil(float64(right/spacing)) * float64(spacing))
-	startY := float32(math.Floor(float64(top/spacing)) * float64(spacing))
-	endY := float32(math.Ceil(float64(bottom/spacing)) * float64(spacing))
+	startX := float32(math.Floor(minX/float64(spacing)) * float64(spacing))
+	endX := float32(math.Ceil(maxX/float64(spacing)) * float64(spacing))
+	startY := float32(math.Floor(minY/float64(spacing)) * float64(spacing))
+	endY := float32(math.Ceil(maxY/float64(spacing)) * float64(spacing))
 
 	return startX, endX, startY, endY
-}
-
-func internal_get_rendering_entity(world *ecs.ECSWorld) (ecs.Entity, error) {
-	set := world.FilterEntitiesByComponents(
-		components.GridComponentType,
-	)
-
-	count := len(set)
-
-	if count == 0 {
-		return ecs.NilEntity, ErrGridRenderingEntityNotFound
-	}
-
-	if count > 1 {
-		return ecs.NilEntity, ErrAmbiguousGridRenderingEntities
-	}
-
-	if entity, ok := set.First(); ok {
-		return entity, nil
-	}
-
-	return ecs.NilEntity, nil
 }

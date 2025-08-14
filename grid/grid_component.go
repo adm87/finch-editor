@@ -1,4 +1,4 @@
-package components
+package grid
 
 import "github.com/adm87/finch-core/ecs"
 
