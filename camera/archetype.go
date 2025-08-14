@@ -16,6 +16,7 @@ func NewCameraEntity(world *ecs.ECSWorld) (ecs.Entity, error) {
 	return world.NewEntityWithComponents(
 		fcam.NewCameraComponent(),
 		NewCameraDragComponent(),
+		NewCameraPanComponent(),
 	)
 }
 
@@ -69,4 +70,19 @@ func FindCameraDragComponent(world *ecs.ECSWorld) (*CameraDragComponent, error) 
 		return nil, ErrCameraNotFound
 	}
 	return cameraDragComponent, nil
+}
+
+func FindCameraPanComponent(world *ecs.ECSWorld) (*CameraPanComponent, error) {
+	entity, err := FindCameraEntity(world)
+	if err != nil {
+		return nil, err
+	}
+	cameraPanComponent, found, err := ecs.GetComponent[*CameraPanComponent](world, entity, CameraPanComponentType)
+	if err != nil {
+		return nil, err
+	}
+	if !found {
+		return nil, ErrCameraNotFound
+	}
+	return cameraPanComponent, nil
 }

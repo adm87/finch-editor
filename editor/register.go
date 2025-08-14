@@ -1,14 +1,14 @@
 package editor
 
 import (
-	fapp "github.com/adm87/finch-application/application"
-	fmsg "github.com/adm87/finch-application/messages"
+	finapp "github.com/adm87/finch-application/application"
+	finmsg "github.com/adm87/finch-application/messages"
 	"github.com/adm87/finch-core/ecs"
 	"github.com/adm87/finch-editor/camera"
 	"github.com/adm87/finch-editor/grid"
 )
 
-func Register(app *fapp.Application, world *ecs.ECSWorld) error {
+func Register(app *finapp.Application, world *ecs.ECSWorld) error {
 	if err := RegisterSystems(app, world); err != nil {
 		return err
 	}
@@ -18,13 +18,14 @@ func Register(app *fapp.Application, world *ecs.ECSWorld) error {
 	return nil
 }
 
-func RegisterSystems(app *fapp.Application, world *ecs.ECSWorld) error {
+func RegisterSystems(app *finapp.Application, world *ecs.ECSWorld) error {
 	return world.RegisterSystems(map[ecs.System]int{
 		// =================================================================
 		// Early Update Systems
 		// =================================================================
-		camera.NewCameraZoom(): 0,
-		camera.NewCameraDrag(): 1,
+		camera.NewCameraDrag(): 0,
+		camera.NewCameraPan():  1,
+		camera.NewCameraZoom(): 2,
 
 		// =================================================================
 		// Fixed Update Systems
@@ -41,8 +42,8 @@ func RegisterSystems(app *fapp.Application, world *ecs.ECSWorld) error {
 	})
 }
 
-func RegisterMessageHandlers(app *fapp.Application, world *ecs.ECSWorld) error {
-	if err := fmsg.ApplicationResize.Subscribe(camera.NewCameraResizeHandler(world)); err != nil {
+func RegisterMessageHandlers(app *finapp.Application, world *ecs.ECSWorld) error {
+	if err := finmsg.ApplicationResize.Subscribe(camera.NewCameraResizeHandler(world)); err != nil {
 		return err
 	}
 	return nil

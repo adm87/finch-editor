@@ -34,8 +34,9 @@ func (s *CameraZoom) EarlyUpdate(world *ecs.ECSWorld, deltaSeconds float64) erro
 
 	cameraComponent, _, _ := ecs.GetComponent[*fcam.CameraComponent](world, cameraEntity, fcam.CameraComponentType)
 	dragComponent, _, _ := ecs.GetComponent[*CameraDragComponent](world, cameraEntity, CameraDragComponentType)
+	panComponent, _, _ := ecs.GetComponent[*CameraPanComponent](world, cameraEntity, CameraPanComponentType)
 
-	if dragComponent.IsDragging {
+	if dragComponent.IsDragging || panComponent.IsPanning {
 		return nil
 	}
 

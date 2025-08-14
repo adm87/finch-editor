@@ -32,6 +32,12 @@ func (s *CameraDrag) EarlyUpdate(world *ecs.ECSWorld, deltaSeconds float64) erro
 
 	cameraComponent, _, _ := ecs.GetComponent[*fcam.CameraComponent](world, cameraEntity, fcam.CameraComponentType)
 	dragComponent, _, _ := ecs.GetComponent[*CameraDragComponent](world, cameraEntity, CameraDragComponentType)
+	panComponent, _, _ := ecs.GetComponent[*CameraPanComponent](world, cameraEntity, CameraPanComponentType)
+
+	if panComponent.IsPanning {
+		dragComponent.IsDragging = false
+		return nil
+	}
 
 	matrix := cameraComponent.WorldMatrix()
 
