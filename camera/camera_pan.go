@@ -1,6 +1,7 @@
 package camera
 
 import (
+	fcam "github.com/adm87/finch-core/components/camera"
 	"github.com/adm87/finch-core/ecs"
 	"github.com/adm87/finch-core/geometry"
 	"github.com/adm87/finch-core/types"
@@ -24,15 +25,13 @@ func (s *CameraPan) Type() ecs.SystemType {
 }
 
 func (s *CameraPan) EarlyUpdate(world *ecs.ECSWorld, deltaSeconds float64) error {
-	cameraComponent, err := FindCameraComponent(world)
+	cameraEntity, err := FindCameraEntity(world)
 	if err != nil {
 		return err
 	}
 
-	dragComponent, err := FindCameraDragComponent(world)
-	if err != nil {
-		return err
-	}
+	cameraComponent, _, _ := ecs.GetComponent[*fcam.CameraComponent](world, cameraEntity, fcam.CameraComponentType)
+	dragComponent, _, _ := ecs.GetComponent[*CameraDragComponent](world, cameraEntity, CameraDragComponentType)
 
 	matrix := cameraComponent.WorldMatrix()
 
