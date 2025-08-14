@@ -1,6 +1,8 @@
 package camera
 
 import (
+	stdmath "math"
+
 	fcam "github.com/adm87/finch-core/components/camera"
 	"github.com/adm87/finch-core/ecs"
 	"github.com/adm87/finch-core/geometry"
@@ -51,13 +53,22 @@ func (s *CameraPan) EarlyUpdate(world *ecs.ECSWorld, deltaSeconds float64) error
 	}
 
 	panComponent.IsPanning = dx != 0 || dy != 0
+	if !panComponent.IsPanning {
+		return nil
+	}
 
-	delta := geometry.Point64{X: dx, Y: dy}.Normalize()
+	_, rad := cameraComponent.Rotation()
+
+	direction := geometry.Point64{
+		X: dx*stdmath.Cos(rad) - dy*stdmath.Sin(rad),
+		Y: dx*stdmath.Sin(rad) + dy*stdmath.Cos(rad),
+	}.Normalize()
+
 	speed := panComponent.PanSpeed * cameraComponent.Zoom
 
 	position := cameraComponent.Position()
-	position.X += delta.X * speed * deltaSeconds
-	position.Y += delta.Y * speed * deltaSeconds
+	position.X += direction.X * speed * deltaSeconds
+	position.Y += direction.Y * speed * deltaSeconds
 	cameraComponent.SetPosition(position)
 
 	return nil

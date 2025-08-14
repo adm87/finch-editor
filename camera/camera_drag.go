@@ -62,17 +62,17 @@ func (s *CameraDrag) EarlyUpdate(world *ecs.ECSWorld, deltaSeconds float64) erro
 		cameraPosition := cameraComponent.Position()
 		downPosition := dragComponent.DownPosition.Value()
 
-		deltaX := wx - downPosition.X
-		deltaY := wy - downPosition.Y
+		dx := wx - downPosition.X
+		dy := wy - downPosition.Y
 
 		cameraComponent.SetPosition(geometry.Point64{
-			X: cameraPosition.X - deltaX,
-			Y: cameraPosition.Y - deltaY,
+			X: cameraPosition.X - dx,
+			Y: cameraPosition.Y - dy,
 		})
 		dragComponent.DragVector.SetValue(geometry.Point64{
-			X: deltaX,
-			Y: deltaY,
-		})
+			X: dx,
+			Y: dy,
+		}.Normalize())
 	}
 
 	return nil
