@@ -4,20 +4,16 @@ import (
 	fcam "github.com/adm87/finch-core/components/camera"
 	"github.com/adm87/finch-core/ecs"
 	"github.com/adm87/finch-core/geometry"
-	"github.com/adm87/finch-core/types"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 var CameraDragType = ecs.NewSystemType[*CameraDrag]()
 
 type CameraDrag struct {
-	downPosition types.Optional[geometry.Point64]
 }
 
 func NewCameraDrag() *CameraDrag {
-	return &CameraDrag{
-		downPosition: types.NewEmptyOption[geometry.Point64](),
-	}
+	return &CameraDrag{}
 }
 
 func (s *CameraDrag) Type() ecs.SystemType {
@@ -45,26 +41,26 @@ func (s *CameraDrag) EarlyUpdate(world *ecs.ECSWorld, deltaSeconds float64) erro
 	wx, wy := matrix.Apply(float64(sx), float64(sy))
 
 	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
-		if !s.downPosition.IsValid() {
-			s.downPosition.SetValue(geometry.Point64{X: wx, Y: wy})
+		if !dragComponent.DownPosition.IsValid() {
+			dragComponent.DownPosition.SetValue(geometry.Point64{X: wx, Y: wy})
 		}
 
 		cameraPosition := cameraComponent.Position()
-		downPosition := s.downPosition.Value()
+		downPosition := dragComponent.DownPosition.Value()
 
 		if cameraPosition.DistanceTo(downPosition) > dragComponent.DragStartThreshold*cameraComponent.Zoom {
 			dragComponent.IsDragging = true
 		}
 	} else {
-		if s.downPosition.IsValid() {
-			s.downPosition.Invalidate()
+		if dragComponent.DownPosition.IsValid() {
+			dragComponent.DownPosition.Invalidate()
 		}
 		dragComponent.IsDragging = false
 	}
 
 	if dragComponent.IsDragging {
 		cameraPosition := cameraComponent.Position()
-		downPosition := s.downPosition.Value()
+		downPosition := dragComponent.DownPosition.Value()
 
 		deltaX := wx - downPosition.X
 		deltaY := wy - downPosition.Y
