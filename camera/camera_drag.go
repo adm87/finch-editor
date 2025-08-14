@@ -8,23 +8,23 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-var CameraPanType = ecs.NewSystemType[*CameraPan]()
+var CameraDragType = ecs.NewSystemType[*CameraDrag]()
 
-type CameraPan struct {
+type CameraDrag struct {
 	downPosition types.Optional[geometry.Point64]
 }
 
-func NewCameraPan() *CameraPan {
-	return &CameraPan{
+func NewCameraDrag() *CameraDrag {
+	return &CameraDrag{
 		downPosition: types.NewEmptyOption[geometry.Point64](),
 	}
 }
 
-func (s *CameraPan) Type() ecs.SystemType {
-	return CameraPanType
+func (s *CameraDrag) Type() ecs.SystemType {
+	return CameraDragType
 }
 
-func (s *CameraPan) EarlyUpdate(world *ecs.ECSWorld, deltaSeconds float64) error {
+func (s *CameraDrag) EarlyUpdate(world *ecs.ECSWorld, deltaSeconds float64) error {
 	cameraEntity, err := FindCameraEntity(world)
 	if err != nil {
 		return err

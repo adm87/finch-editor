@@ -24,7 +24,7 @@ func RegisterSystems(app *fapp.Application, world *ecs.ECSWorld) error {
 		// Early Update Systems
 		// =================================================================
 		camera.NewCameraZoom(): 0,
-		camera.NewCameraPan():  1,
+		camera.NewCameraDrag(): 1,
 
 		// =================================================================
 		// Fixed Update Systems
