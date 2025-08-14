@@ -1,20 +1,24 @@
 package editor
 
 import (
-	finch "github.com/adm87/finch-application/application"
+	fapp "github.com/adm87/finch-application/application"
+	fmsg "github.com/adm87/finch-application/messages"
 	"github.com/adm87/finch-core/ecs"
 	"github.com/adm87/finch-editor/camera"
 	"github.com/adm87/finch-editor/grid"
 )
 
-func Register(app *finch.Application, world *ecs.ECSWorld) error {
+func Register(app *fapp.Application, world *ecs.ECSWorld) error {
 	if err := RegisterSystems(app, world); err != nil {
+		return err
+	}
+	if err := RegisterMessageHandlers(app, world); err != nil {
 		return err
 	}
 	return nil
 }
 
-func RegisterSystems(app *finch.Application, world *ecs.ECSWorld) error {
+func RegisterSystems(app *fapp.Application, world *ecs.ECSWorld) error {
 	return world.RegisterSystems(map[ecs.System]int{
 		// =================================================================
 		// Early Update Systems
@@ -35,4 +39,11 @@ func RegisterSystems(app *finch.Application, world *ecs.ECSWorld) error {
 		// =================================================================
 		grid.NewGridRenderingSystem(app.Config().Window): 0,
 	})
+}
+
+func RegisterMessageHandlers(app *fapp.Application, world *ecs.ECSWorld) error {
+	if err := fmsg.ApplicationResize.Subscribe(camera.NewCameraResizeHandler(world)); err != nil {
+		return err
+	}
+	return nil
 }
