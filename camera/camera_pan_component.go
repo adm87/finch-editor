@@ -7,14 +7,16 @@ import (
 var CameraPanComponentType = ecs.NewComponentType[*CameraPanComponent]()
 
 type CameraPanComponent struct {
-	PanSpeed float64
+	PanSpeed      float64
+	QuickPanSpeed float64
 
 	IsPanning bool
 }
 
 func NewCameraPanComponent() *CameraPanComponent {
 	return &CameraPanComponent{
-		PanSpeed: 100.0,
+		PanSpeed:      100.0,
+		QuickPanSpeed: 400.0,
 	}
 }
 

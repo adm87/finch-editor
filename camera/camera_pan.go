@@ -65,6 +65,9 @@ func (s *CameraPan) EarlyUpdate(world *ecs.World, deltaSeconds float64) error {
 	}.Normalize()
 
 	speed := panComponent.PanSpeed * cameraComponent.Zoom
+	if ebiten.IsKeyPressed(ebiten.KeyShift) {
+		speed = panComponent.QuickPanSpeed * cameraComponent.Zoom
+	}
 
 	position := cameraComponent.Position()
 	position.X += direction.X * speed * deltaSeconds
