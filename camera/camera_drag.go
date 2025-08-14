@@ -20,7 +20,7 @@ func (s *CameraDrag) Type() ecs.SystemType {
 	return CameraDragType
 }
 
-func (s *CameraDrag) EarlyUpdate(world *ecs.ECSWorld, deltaSeconds float64) error {
+func (s *CameraDrag) EarlyUpdate(world *ecs.World, deltaSeconds float64) error {
 	cameraEntity, err := FindCameraEntity(world)
 	if err != nil {
 		return err

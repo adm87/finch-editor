@@ -8,7 +8,7 @@ import (
 	"github.com/adm87/finch-editor/grid"
 )
 
-func Register(app *finapp.Application, world *ecs.ECSWorld) error {
+func Register(app *finapp.Application, world *ecs.World) error {
 	if err := RegisterSystems(app, world); err != nil {
 		return err
 	}
@@ -18,7 +18,7 @@ func Register(app *finapp.Application, world *ecs.ECSWorld) error {
 	return nil
 }
 
-func RegisterSystems(app *finapp.Application, world *ecs.ECSWorld) error {
+func RegisterSystems(app *finapp.Application, world *ecs.World) error {
 	return world.RegisterSystems(map[ecs.System]int{
 		// =================================================================
 		// Early Update Systems
@@ -42,7 +42,7 @@ func RegisterSystems(app *finapp.Application, world *ecs.ECSWorld) error {
 	})
 }
 
-func RegisterMessageHandlers(app *finapp.Application, world *ecs.ECSWorld) error {
+func RegisterMessageHandlers(app *finapp.Application, world *ecs.World) error {
 	if err := finmsg.ApplicationResize.Subscribe(camera.NewCameraResizeHandler(world)); err != nil {
 		return err
 	}

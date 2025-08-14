@@ -7,10 +7,10 @@ import (
 )
 
 type CameraResizeHandler struct {
-	world *ecs.ECSWorld
+	world *ecs.World
 }
 
-func NewCameraResizeHandler(world *ecs.ECSWorld) *CameraResizeHandler {
+func NewCameraResizeHandler(world *ecs.World) *CameraResizeHandler {
 	return &CameraResizeHandler{
 		world: world,
 	}

@@ -37,7 +37,7 @@ func (s *GridRenderingSystem) Type() ecs.SystemType {
 	return GridRenderingSystemType
 }
 
-func (s *GridRenderingSystem) Render(world *ecs.ECSWorld, buffer *ebiten.Image) error {
+func (s *GridRenderingSystem) Render(world *ecs.World, buffer *ebiten.Image) error {
 	gridComponent, err := FindGridComponent(world)
 	if err != nil {
 		return err

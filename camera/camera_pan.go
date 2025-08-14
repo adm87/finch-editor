@@ -22,7 +22,7 @@ func (s *CameraPan) Type() ecs.SystemType {
 	return CameraPanSystemType
 }
 
-func (s *CameraPan) EarlyUpdate(world *ecs.ECSWorld, deltaSeconds float64) error {
+func (s *CameraPan) EarlyUpdate(world *ecs.World, deltaSeconds float64) error {
 	cameraEntity, err := FindCameraEntity(world)
 	if err != nil {
 		return err

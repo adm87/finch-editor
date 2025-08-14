@@ -26,7 +26,7 @@ func (s *CameraZoom) Type() ecs.SystemType {
 	return CameraZoomType
 }
 
-func (s *CameraZoom) EarlyUpdate(world *ecs.ECSWorld, deltaSeconds float64) error {
+func (s *CameraZoom) EarlyUpdate(world *ecs.World, deltaSeconds float64) error {
 	cameraEntity, err := FindCameraEntity(world)
 	if err != nil {
 		return err

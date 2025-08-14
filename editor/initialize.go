@@ -7,7 +7,7 @@ import (
 	"github.com/adm87/finch-editor/grid"
 )
 
-func Initialize(app *fin.Application, world *ecs.ECSWorld) error {
+func Initialize(app *fin.Application, world *ecs.World) error {
 	if _, err := camera.NewCameraEntity(world); err != nil {
 		return err
 	}

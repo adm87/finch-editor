@@ -12,7 +12,7 @@ var (
 	ErrMultipleCamerasFound = errors.NewAmbiguousError("multiple camera entities found")
 )
 
-func NewCameraEntity(world *ecs.ECSWorld) (ecs.Entity, error) {
+func NewCameraEntity(world *ecs.World) (ecs.Entity, error) {
 	return world.NewEntityWithComponents(
 		fcam.NewCameraComponent(),
 		NewCameraDragComponent(),
@@ -20,7 +20,7 @@ func NewCameraEntity(world *ecs.ECSWorld) (ecs.Entity, error) {
 	)
 }
 
-func FindCameraEntities(world *ecs.ECSWorld) hash.HashSet[ecs.Entity] {
+func FindCameraEntities(world *ecs.World) hash.HashSet[ecs.Entity] {
 	return world.FilterEntitiesByComponents(
 		fcam.CameraComponentType,
 		CameraDragComponentType,
@@ -28,7 +28,7 @@ func FindCameraEntities(world *ecs.ECSWorld) hash.HashSet[ecs.Entity] {
 	)
 }
 
-func FindCameraEntity(world *ecs.ECSWorld) (ecs.Entity, error) {
+func FindCameraEntity(world *ecs.World) (ecs.Entity, error) {
 	entities := FindCameraEntities(world)
 	if entities.IsEmpty() {
 		return ecs.NilEntity, ErrCameraNotFound
@@ -43,7 +43,7 @@ func FindCameraEntity(world *ecs.ECSWorld) (ecs.Entity, error) {
 	return entity, nil
 }
 
-func FindCameraComponent(world *ecs.ECSWorld) (*fcam.CameraComponent, error) {
+func FindCameraComponent(world *ecs.World) (*fcam.CameraComponent, error) {
 	entity, err := FindCameraEntity(world)
 	if err != nil {
 		return nil, err
@@ -58,7 +58,7 @@ func FindCameraComponent(world *ecs.ECSWorld) (*fcam.CameraComponent, error) {
 	return cameraComponent, nil
 }
 
-func FindCameraDragComponent(world *ecs.ECSWorld) (*CameraDragComponent, error) {
+func FindCameraDragComponent(world *ecs.World) (*CameraDragComponent, error) {
 	entity, err := FindCameraEntity(world)
 	if err != nil {
 		return nil, err
@@ -73,7 +73,7 @@ func FindCameraDragComponent(world *ecs.ECSWorld) (*CameraDragComponent, error) 
 	return cameraDragComponent, nil
 }
 
-func FindCameraPanComponent(world *ecs.ECSWorld) (*CameraPanComponent, error) {
+func FindCameraPanComponent(world *ecs.World) (*CameraPanComponent, error) {
 	entity, err := FindCameraEntity(world)
 	if err != nil {
 		return nil, err

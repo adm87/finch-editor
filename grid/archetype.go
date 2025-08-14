@@ -10,19 +10,19 @@ var (
 	ErrGridEntityNotFound = errors.NewNotFoundError("editor grid entity")
 )
 
-func NewEditorGridEntity(world *ecs.ECSWorld) (ecs.Entity, error) {
+func NewEditorGridEntity(world *ecs.World) (ecs.Entity, error) {
 	return world.NewEntityWithComponents(
 		NewGridComponent(),
 	)
 }
 
-func FindEditorGridEntities(world *ecs.ECSWorld) hash.HashSet[ecs.Entity] {
+func FindEditorGridEntities(world *ecs.World) hash.HashSet[ecs.Entity] {
 	return world.FilterEntitiesByComponents(
 		GridComponentType,
 	)
 }
 
-func FindEditorGridEntity(world *ecs.ECSWorld) (ecs.Entity, error) {
+func FindEditorGridEntity(world *ecs.World) (ecs.Entity, error) {
 	entities := FindEditorGridEntities(world)
 	if entities.IsEmpty() {
 		return ecs.NilEntity, ErrGridEntityNotFound
@@ -34,7 +34,7 @@ func FindEditorGridEntity(world *ecs.ECSWorld) (ecs.Entity, error) {
 	return entity, nil
 }
 
-func FindGridComponent(world *ecs.ECSWorld) (*GridComponent, error) {
+func FindGridComponent(world *ecs.World) (*GridComponent, error) {
 	entity, err := FindEditorGridEntity(world)
 	if err != nil {
 		return nil, err
