@@ -13,7 +13,6 @@ type GridComponent struct {
 	CellSize    float32
 	MaxGridSize float32
 	MinGridSize float32
-	LineColor   []float32
 	GridStates  []GridState
 }
 
@@ -30,12 +29,6 @@ func NewGridComponent() *GridComponent {
 		CellSize:    32.0,
 		MaxGridSize: 16.0,
 		MinGridSize: 0.25,
-		LineColor: []float32{
-			1.0,
-			1.0,
-			1.0,
-			0.25,
-		},
 		GridStates: []GridState{
 			{Scale: 0.01},
 			{Scale: 0.1},

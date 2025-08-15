@@ -3,6 +3,7 @@ package application
 import (
 	"image/color"
 	"io/fs"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -42,7 +43,7 @@ var Application = finch.NewApplicationWithConfig(
 			RenderScale:     1.0,
 			Fullscreen:      false,
 			ClearBackground: true,
-			ClearColor:      color.RGBA{R: 30, G: 30, B: 30, A: 255},
+			ClearColor:      color.RGBA{R: 29, G: 33, B: 41, A: 255},
 		},
 	}).
 	WithStartup(Start).
@@ -88,8 +89,10 @@ func Update(app *finch.Application, deltaSeconds, fixedDeltaSeconds float64, fra
 }
 
 func AddResourceFilesystems(app *finch.Application, world *ecs.World) error {
+	resourcePath := app.Config().Resources.Path
 	return app.Cache().AddFilesystems(map[string]fs.FS{
 		"embedded": data.Embedded,
+		"assets":   os.DirFS(filepath.Join(resourcePath, "assets")),
 	})
 }
 

@@ -26,7 +26,7 @@ type GridRenderingSystem struct {
 
 func NewGridRenderingSystem(window *config.Window) *GridRenderingSystem {
 	img := ebiten.NewImage(1, 1)
-	img.Fill(color.White)
+	img.Fill(color.RGBA{R: 216, G: 222, B: 233, A: 255})
 	return &GridRenderingSystem{
 		img:    img,
 		window: window,
@@ -62,10 +62,10 @@ func (s *GridRenderingSystem) Render(world *ecs.World, buffer *ebiten.Image) err
 		}
 
 		for i := range vertices {
-			vertices[i].ColorR = gridComponent.LineColor[0]
-			vertices[i].ColorG = gridComponent.LineColor[1]
-			vertices[i].ColorB = gridComponent.LineColor[2]
-			vertices[i].ColorA = gridComponent.LineColor[3] * opacity
+			vertices[i].ColorR = 1
+			vertices[i].ColorG = 1
+			vertices[i].ColorB = 1
+			vertices[i].ColorA = 0.5 * opacity
 		}
 
 		buffer.DrawTriangles(vertices, indices, s.img, &ebiten.DrawTrianglesOptions{})
@@ -83,9 +83,6 @@ func (s *GridRenderingSystem) CalculateGridPaths(gridComponent *GridComponent, c
 
 		i := grid.Size / gridComponent.CellSize
 		rangeSize := gridComponent.MaxGridSize - gridComponent.MinGridSize
-		if rangeSize == 0 {
-			continue
-		}
 
 		// Calculate opacity based on how close i is to the min/max
 		dMin := (i - gridComponent.MinGridSize) / rangeSize

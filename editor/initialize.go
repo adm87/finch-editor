@@ -2,6 +2,7 @@ package editor
 
 import (
 	finapp "github.com/adm87/finch-application/application"
+	"github.com/adm87/finch-core/components/bounds"
 	"github.com/adm87/finch-core/components/transform"
 	"github.com/adm87/finch-core/ecs"
 	"github.com/adm87/finch-core/geometry"
@@ -19,21 +20,34 @@ func Initialize(app *finapp.Application, world *ecs.World) error {
 		return err
 	}
 
-	tile0000Img, err := app.Cache().Images().Get("tile0000")
+	if err := app.Cache().Load("tile_0000"); err != nil {
+		return err
+	}
+
+	tile0000Img, err := app.Cache().Images().Get("tile_0000")
 	if err != nil {
 		return err
 	}
 
+	anchor := geometry.Point64{
+		X: 0.5,
+		Y: 0.5,
+	}
+
 	spriteRenderer := sprites.NewSpriteRenderer(
-		tile0000Img, geometry.Point64{
-			X: 0.5,
-			Y: 0.5,
-		},
+		tile0000Img, anchor,
 	)
 
 	if _, err := world.NewEntityWithComponents(
 		rendering.NewRenderComponent(spriteRenderer, 0),
 		transform.NewTransformComponent(),
+		bounds.NewBoundsComponent(
+			geometry.Point64{
+				X: float64(tile0000Img.Bounds().Dx()),
+				Y: float64(tile0000Img.Bounds().Dy()),
+			},
+			anchor,
+		),
 	); err != nil {
 		return err
 	}
