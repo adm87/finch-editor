@@ -38,16 +38,33 @@ func Initialize(app *finapp.Application, world *ecs.World) error {
 		tile0000Img, anchor,
 	)
 
-	if _, err := world.NewEntityWithComponents(
+	spriteA, err := world.NewEntityWithComponents(
 		rendering.NewRenderComponent(spriteRenderer, 0),
 		transform.NewTransformComponent(),
 		bounds.NewBoundsComponent(
 			spriteRenderer.Size(),
 			anchor,
 		),
-	); err != nil {
+	)
+	if err != nil {
 		return err
 	}
+	tA, _, _ := ecs.GetComponent[*transform.TransformComponent](world, spriteA, transform.TransformComponentType)
+	tA.SetPosition(geometry.Point64{X: -20, Y: 0})
+
+	spriteB, err := world.NewEntityWithComponents(
+		rendering.NewRenderComponent(spriteRenderer, 0),
+		transform.NewTransformComponent(),
+		bounds.NewBoundsComponent(
+			spriteRenderer.Size(),
+			anchor,
+		),
+	)
+	if err != nil {
+		return err
+	}
+	tB, _, _ := ecs.GetComponent[*transform.TransformComponent](world, spriteB, transform.TransformComponentType)
+	tB.SetPosition(geometry.Point64{X: 20, Y: 0})
 
 	return nil
 }
