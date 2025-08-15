@@ -21,9 +21,13 @@ func (handler *CameraResizeHandler) HandleMessage(msg finmsg.ApplicationResizeMe
 	if err != nil {
 		return err
 	}
+
+	cameraComponent.ViewWidth = float64(msg.To.X)
+	cameraComponent.ViewHeight = float64(msg.To.Y)
+
 	cameraComponent.SetOrigin(geometry.Point64{
-		X: float64(msg.To.X) / 2,
-		Y: float64(msg.To.Y) / 2,
+		X: cameraComponent.ViewWidth / 2,
+		Y: cameraComponent.ViewHeight / 2,
 	})
 	return nil
 }

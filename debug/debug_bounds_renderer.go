@@ -45,6 +45,8 @@ func (d *DebugBoundsRenderer) Render(world *ecs.World, buffer *ebiten.Image) err
 	view := cameraComponent.WorldMatrix()
 	view.Invert()
 
+	viewport := cameraComponent.Viewport()
+
 	path := vector.Path{}
 
 	for entity := range entities {
@@ -52,6 +54,10 @@ func (d *DebugBoundsRenderer) Render(world *ecs.World, buffer *ebiten.Image) err
 		transformComponent, _, _ := ecs.GetComponent[*transform.TransformComponent](world, entity, transform.TransformComponentType)
 
 		rect := boundsComponent.AABB(transformComponent.Position())
+
+		if !viewport.Intersects(rect) {
+			continue
+		}
 
 		x, y := rect.X, rect.Y
 		w, h := rect.Width, rect.Height

@@ -37,8 +37,6 @@ var Application = finch.NewApplicationWithConfig(
 			Title:           "Finch Editor",
 			Width:           1240,
 			Height:          720,
-			ScreenWidth:     800,
-			ScreenHeight:    600,
 			ResizeMode:      ebiten.WindowResizingModeEnabled,
 			RenderScale:     1.0,
 			Fullscreen:      false,
