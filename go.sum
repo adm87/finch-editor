@@ -2,6 +2,8 @@ github.com/adm87/finch-application v0.0.0-20250814152303-7c40775f4034 h1:Tfkj2KE
 github.com/adm87/finch-application v0.0.0-20250814152303-7c40775f4034/go.mod h1:hBY9o9l+tXfNIeoI3BN9pVP2OikJ5WbA2+8GB3h3dXY=
 github.com/adm87/finch-core v0.0.0-20250814152244-9829a27e9698 h1:9r72C6qkRmODNAO1G0fcvVUg88WjUwqT4yo92ujDLr4=
 github.com/adm87/finch-core v0.0.0-20250814152244-9829a27e9698/go.mod h1:hglLOz/46ZEW3e0qxNPOevW2AKRqqJkaTR/QNGb9SDk=
+github.com/adm87/finch-rendering v0.0.0-20250814205535-ccb9e325677a h1:6Ief5nRGa5//y161MKLXajkofgQTOsvV9A2ZIw/IhxY=
+github.com/adm87/finch-rendering v0.0.0-20250814205535-ccb9e325677a/go.mod h1:evaCWgXR7hRtK1pr3EYU9msugRek5fx0aKsHjUO7tIw=
 github.com/adm87/finch-resources v0.0.0-20250801010448-71fa6bbc8e79 h1:3Mslea7IMAt/9o5t5KzEqrsciZli2PyNxcjDZQ+0fHk=
 github.com/adm87/finch-resources v0.0.0-20250801010448-71fa6bbc8e79/go.mod h1:HLG4k9woa0C9npNJsbYGkh0ut5wKw8naDj9TwblfPRQ=
 github.com/cpuguy83/go-md2man/v2 v2.0.6/go.mod h1:oOW0eioCTA6cOiMLiUPZOpcVxMig6NIQQ7OS05n1F4g=
