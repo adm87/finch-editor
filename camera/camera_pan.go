@@ -12,10 +12,25 @@ import (
 var CameraPanSystemType = ecs.NewSystemType[*CameraPan]()
 
 type CameraPan struct {
+	enabled bool
 }
 
 func NewCameraPan() *CameraPan {
-	return &CameraPan{}
+	return &CameraPan{
+		enabled: true,
+	}
+}
+
+func (s *CameraPan) Enable() {
+	s.enabled = true
+}
+
+func (s *CameraPan) Disable() {
+	s.enabled = false
+}
+
+func (s *CameraPan) IsEnabled() bool {
+	return s.enabled
 }
 
 func (s *CameraPan) Type() ecs.SystemType {

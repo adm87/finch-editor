@@ -20,6 +20,8 @@ var (
 )
 
 type GridRenderingSystem struct {
+	enabled bool
+
 	img    *ebiten.Image
 	window *config.Window
 }
@@ -28,9 +30,22 @@ func NewGridRenderingSystem(window *config.Window) *GridRenderingSystem {
 	img := ebiten.NewImage(1, 1)
 	img.Fill(color.RGBA{R: 216, G: 222, B: 233, A: 255})
 	return &GridRenderingSystem{
-		img:    img,
-		window: window,
+		enabled: true,
+		img:     img,
+		window:  window,
 	}
+}
+
+func (s *GridRenderingSystem) Enable() {
+	s.enabled = true
+}
+
+func (s *GridRenderingSystem) Disable() {
+	s.enabled = false
+}
+
+func (s *GridRenderingSystem) IsEnabled() bool {
+	return s.enabled
 }
 
 func (s *GridRenderingSystem) Type() ecs.SystemType {

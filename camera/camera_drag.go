@@ -10,10 +10,25 @@ import (
 var CameraDragType = ecs.NewSystemType[*CameraDrag]()
 
 type CameraDrag struct {
+	enabled bool
 }
 
 func NewCameraDrag() *CameraDrag {
-	return &CameraDrag{}
+	return &CameraDrag{
+		enabled: true,
+	}
+}
+
+func (s *CameraDrag) Enable() {
+	s.enabled = true
+}
+
+func (s *CameraDrag) Disable() {
+	s.enabled = false
+}
+
+func (s *CameraDrag) IsEnabled() bool {
+	return s.enabled
 }
 
 func (s *CameraDrag) Type() ecs.SystemType {

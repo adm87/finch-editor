@@ -16,10 +16,25 @@ const (
 var CameraZoomType = ecs.NewSystemType[*CameraZoom]()
 
 type CameraZoom struct {
+	enabled bool
 }
 
 func NewCameraZoom() *CameraZoom {
-	return &CameraZoom{}
+	return &CameraZoom{
+		enabled: true,
+	}
+}
+
+func (s *CameraZoom) Enable() {
+	s.enabled = true
+}
+
+func (s *CameraZoom) Disable() {
+	s.enabled = false
+}
+
+func (s *CameraZoom) IsEnabled() bool {
+	return s.enabled
 }
 
 func (s *CameraZoom) Type() ecs.SystemType {

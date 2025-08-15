@@ -14,13 +14,30 @@ import (
 var DebugBoundsRendererType = ecs.NewSystemType[*DebugBoundsRenderer]()
 
 type DebugBoundsRenderer struct {
+	enabled bool
+
 	img *ebiten.Image
 }
 
 func NewDebugBoundsRenderer() *DebugBoundsRenderer {
 	img := ebiten.NewImage(1, 1)
 	img.Fill(color.RGBA{R: 163, G: 190, B: 140, A: 255})
-	return &DebugBoundsRenderer{img: img}
+	return &DebugBoundsRenderer{
+		img:     img,
+		enabled: true,
+	}
+}
+
+func (d *DebugBoundsRenderer) Enable() {
+	d.enabled = true
+}
+
+func (d *DebugBoundsRenderer) Disable() {
+	d.enabled = false
+}
+
+func (d *DebugBoundsRenderer) IsEnabled() bool {
+	return d.enabled
 }
 
 func (d *DebugBoundsRenderer) Type() ecs.SystemType {
