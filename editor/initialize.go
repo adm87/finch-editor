@@ -31,7 +31,7 @@ func Initialize(app *finapp.Application, world *ecs.World) error {
 
 	anchor := geometry.Point64{
 		X: 0.5,
-		Y: 0.5,
+		Y: 1.0,
 	}
 
 	spriteRenderer := sprites.NewSpriteRenderer(
@@ -42,10 +42,7 @@ func Initialize(app *finapp.Application, world *ecs.World) error {
 		rendering.NewRenderComponent(spriteRenderer, 0),
 		transform.NewTransformComponent(),
 		bounds.NewBoundsComponent(
-			geometry.Point64{
-				X: float64(tile0000Img.Bounds().Dx()),
-				Y: float64(tile0000Img.Bounds().Dy()),
-			},
+			spriteRenderer.Size(),
 			anchor,
 		),
 	); err != nil {

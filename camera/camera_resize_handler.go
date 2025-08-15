@@ -1,7 +1,7 @@
 package camera
 
 import (
-	fmsg "github.com/adm87/finch-application/messages"
+	finmsg "github.com/adm87/finch-application/messages"
 	"github.com/adm87/finch-core/ecs"
 	"github.com/adm87/finch-core/geometry"
 )
@@ -16,7 +16,7 @@ func NewCameraResizeHandler(world *ecs.World) *CameraResizeHandler {
 	}
 }
 
-func (handler *CameraResizeHandler) HandleMessage(msg fmsg.ApplicationResizeMessage) error {
+func (handler *CameraResizeHandler) HandleMessage(msg finmsg.ApplicationResizeMessage) error {
 	cameraComponent, err := FindCameraComponent(handler.world)
 	if err != nil {
 		return err
