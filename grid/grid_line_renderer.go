@@ -12,48 +12,48 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
-var GridRenderingSystemType = ecs.NewSystemType[*GridRenderingSystem]()
+var GridLineRendererType = ecs.NewSystemType[*GridLineRenderer]()
 
 var (
 	ErrAmbiguousGridRenderingEntities = errors.NewAmbiguousError("grid rendering entities")
 	ErrGridRenderingEntityNotFound    = errors.NewNotFoundError("grid rendering entity")
 )
 
-type GridRenderingSystem struct {
+type GridLineRenderer struct {
 	enabled bool
 
 	img    *ebiten.Image
 	window *config.Window
 }
 
-func NewGridRenderingSystem(window *config.Window) *GridRenderingSystem {
+func NewGridLineRenderer(window *config.Window) *GridLineRenderer {
 	img := ebiten.NewImage(1, 1)
 	img.Fill(color.RGBA{R: 216, G: 222, B: 233, A: 255})
-	return &GridRenderingSystem{
+	return &GridLineRenderer{
 		enabled: true,
 		img:     img,
 		window:  window,
 	}
 }
 
-func (s *GridRenderingSystem) Enable() {
+func (s *GridLineRenderer) Enable() {
 	s.enabled = true
 }
 
-func (s *GridRenderingSystem) Disable() {
+func (s *GridLineRenderer) Disable() {
 	s.enabled = false
 }
 
-func (s *GridRenderingSystem) IsEnabled() bool {
+func (s *GridLineRenderer) IsEnabled() bool {
 	return s.enabled
 }
 
-func (s *GridRenderingSystem) Type() ecs.SystemType {
-	return GridRenderingSystemType
+func (s *GridLineRenderer) Type() ecs.SystemType {
+	return GridLineRendererType
 }
 
-func (s *GridRenderingSystem) Render(world *ecs.World, buffer *ebiten.Image) error {
-	gridComponent, err := FindGridComponent(world)
+func (s *GridLineRenderer) Render(world *ecs.World, buffer *ebiten.Image) error {
+	gridComponent, err := FindGridLineComponent(world)
 	if err != nil {
 		return err
 	}
@@ -89,7 +89,7 @@ func (s *GridRenderingSystem) Render(world *ecs.World, buffer *ebiten.Image) err
 	return nil
 }
 
-func (s *GridRenderingSystem) CalculateGridPaths(gridComponent *GridComponent, cameraComponent *camera.CameraComponent, view ebiten.GeoM) map[*vector.Path]float32 {
+func (s *GridLineRenderer) CalculateGridPaths(gridComponent *GridLineComponent, cameraComponent *camera.CameraComponent, view ebiten.GeoM) map[*vector.Path]float32 {
 	paths := make(map[*vector.Path]float32)
 
 	for _, grid := range gridComponent.GridStates {
@@ -120,7 +120,7 @@ func (s *GridRenderingSystem) CalculateGridPaths(gridComponent *GridComponent, c
 	return paths
 }
 
-func (s *GridRenderingSystem) GetGridPath(spacing float32, view ebiten.GeoM, invView ebiten.GeoM) vector.Path {
+func (s *GridLineRenderer) GetGridPath(spacing float32, view ebiten.GeoM, invView ebiten.GeoM) vector.Path {
 	left, right, top, bottom := s.GetCorners(spacing, view, invView)
 
 	path := vector.Path{}
@@ -141,7 +141,7 @@ func (s *GridRenderingSystem) GetGridPath(spacing float32, view ebiten.GeoM, inv
 	return path
 }
 
-func (s *GridRenderingSystem) GetCorners(spacing float32, view ebiten.GeoM, invView ebiten.GeoM) (float32, float32, float32, float32) {
+func (s *GridLineRenderer) GetCorners(spacing float32, view ebiten.GeoM, invView ebiten.GeoM) (float32, float32, float32, float32) {
 	width := float32(s.window.ScreenWidth)
 	height := float32(s.window.ScreenHeight)
 	corners := [4][2]float64{

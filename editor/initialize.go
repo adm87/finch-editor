@@ -16,7 +16,7 @@ func Initialize(app *finapp.Application, world *ecs.World) error {
 	if _, err := camera.NewCameraEntity(world); err != nil {
 		return err
 	}
-	if _, err := grid.NewEditorGridEntity(world); err != nil {
+	if _, err := grid.NewGridLineEntity(world); err != nil {
 		return err
 	}
 

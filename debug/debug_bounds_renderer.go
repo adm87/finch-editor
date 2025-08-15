@@ -105,5 +105,4 @@ func (d *DebugBoundsRenderer) Render(world *ecs.World, buffer *ebiten.Image) err
 	buffer.DrawTriangles(vertices, indices, d.img, &ebiten.DrawTrianglesOptions{})
 
 	return nil
-
 }

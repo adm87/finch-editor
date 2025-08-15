@@ -10,6 +10,7 @@ import (
 	finch "github.com/adm87/finch-application/application"
 	"github.com/adm87/finch-application/config"
 	"github.com/adm87/finch-core/ecs"
+	"github.com/adm87/finch-core/keys"
 	"github.com/adm87/finch-core/linq"
 	"github.com/adm87/finch-editor/data"
 	"github.com/adm87/finch-editor/editor"
@@ -80,6 +81,9 @@ func Draw(app *finch.Application, screen *ebiten.Image) error {
 
 // Update processes the world and UI update systems
 func Update(app *finch.Application, deltaSeconds, fixedDeltaSeconds float64, frames int) error {
+	if err := keys.Poll(); err != nil {
+		return err
+	}
 	if err := world.ProcessUpdateSystems(deltaSeconds, fixedDeltaSeconds, frames); err != nil {
 		return err
 	}
