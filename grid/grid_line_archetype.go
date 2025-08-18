@@ -10,7 +10,7 @@ var (
 	ErrGridLineEntityNotFound = errors.NewNotFoundError("editor grid line entity")
 )
 
-func NewGridLineEntity(world *ecs.World) (ecs.Entity, error) {
+func NewGridLines(world *ecs.World) (ecs.Entity, error) {
 	return world.NewEntityWithComponents(
 		NewGridLineComponent(),
 	)

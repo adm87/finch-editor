@@ -12,7 +12,7 @@ var (
 	ErrMultipleCamerasFound = errors.NewAmbiguousError("multiple camera entities found")
 )
 
-func NewCameraEntity(world *ecs.World) (ecs.Entity, error) {
+func NewCamera(world *ecs.World) (ecs.Entity, error) {
 	return world.NewEntityWithComponents(
 		fcam.NewCameraComponent(),
 		NewCameraDragComponent(),

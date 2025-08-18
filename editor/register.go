@@ -8,6 +8,7 @@ import (
 	"github.com/adm87/finch-editor/camera"
 	"github.com/adm87/finch-editor/debug"
 	"github.com/adm87/finch-editor/grid"
+	"github.com/adm87/finch-editor/selection"
 	"github.com/adm87/finch-rendering/rendering"
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -33,6 +34,9 @@ func RegisterECSSystems(app *finapp.Application, world *ecs.World) error {
 		// =================================================================
 		// Early Update Systems
 		// =================================================================
+		selection.NewSelectionBoxUpdate(): -2,
+		selection.NewSelectionSystem():    -1,
+
 		camera.NewCameraDrag(): 0,
 		camera.NewCameraPan():  1,
 		camera.NewCameraZoom(): 2,
@@ -48,8 +52,9 @@ func RegisterECSSystems(app *finapp.Application, world *ecs.World) error {
 		// =================================================================
 		// Rendering Systems
 		// =================================================================
-		grid.NewGridLineRenderer(app.Config().Window): 0,
-		rendering.NewRenderSystem():                   1,
+		grid.NewGridLineRenderer(app.Config().Window): -1000,
+
+		rendering.NewRenderSystem(): 0,
 	})
 }
 

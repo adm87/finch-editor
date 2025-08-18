@@ -8,15 +8,19 @@ import (
 	"github.com/adm87/finch-core/geometry"
 	"github.com/adm87/finch-editor/camera"
 	"github.com/adm87/finch-editor/grid"
+	"github.com/adm87/finch-editor/selection"
 	"github.com/adm87/finch-rendering/renderers/sprites"
 	"github.com/adm87/finch-rendering/rendering"
 )
 
 func Initialize(app *finapp.Application, world *ecs.World) error {
-	if _, err := camera.NewCameraEntity(world); err != nil {
+	if _, err := grid.NewGridLines(world); err != nil {
 		return err
 	}
-	if _, err := grid.NewGridLineEntity(world); err != nil {
+	if _, err := selection.NewSelectionBox(world); err != nil {
+		return err
+	}
+	if _, err := camera.NewCamera(world); err != nil {
 		return err
 	}
 
@@ -38,33 +42,27 @@ func Initialize(app *finapp.Application, world *ecs.World) error {
 		tile0000Img, anchor,
 	)
 
-	spriteA, err := world.NewEntityWithComponents(
-		rendering.NewRenderComponent(spriteRenderer, 0),
-		transform.NewTransformComponent(),
-		bounds.NewBoundsComponent(
-			spriteRenderer.Size(),
-			anchor,
-		),
-	)
-	if err != nil {
+	if _, err := NewTestEntity(world, -20, 0, spriteRenderer); err != nil {
 		return err
 	}
-	tA, _, _ := ecs.GetComponent[*transform.TransformComponent](world, spriteA, transform.TransformComponentType)
-	tA.SetPosition(geometry.Point64{X: -20, Y: 0})
-
-	spriteB, err := world.NewEntityWithComponents(
-		rendering.NewRenderComponent(spriteRenderer, 0),
-		transform.NewTransformComponent(),
-		bounds.NewBoundsComponent(
-			spriteRenderer.Size(),
-			anchor,
-		),
-	)
-	if err != nil {
+	if _, err := NewTestEntity(world, 20, 0, spriteRenderer); err != nil {
 		return err
 	}
-	tB, _, _ := ecs.GetComponent[*transform.TransformComponent](world, spriteB, transform.TransformComponentType)
-	tB.SetPosition(geometry.Point64{X: 20, Y: 0})
 
 	return nil
+}
+
+func NewTestEntity(world *ecs.World, x, y float64, spriteRenderer *sprites.SpriteRenderer) (ecs.Entity, error) {
+	t := transform.NewTransformComponent()
+	t.SetPosition(geometry.Point64{X: x, Y: y})
+
+	return world.NewEntityWithComponents(
+		rendering.NewRenderComponent(spriteRenderer, 0),
+		t,
+		bounds.NewBoundsComponent(
+			spriteRenderer.Size(),
+			geometry.Point64{X: 0.5, Y: 1.0},
+		),
+		selection.NewSelectableComponent(),
+	)
 }

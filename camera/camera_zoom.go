@@ -60,7 +60,7 @@ func (s *CameraZoom) EarlyUpdate(world *ecs.World, deltaSeconds float64) error {
 	wx, wy := matrix.Apply(float64(sx), float64(sy))
 
 	if _, y := ebiten.Wheel(); y != 0 {
-		cameraComponent.Zoom *= 1 + y*cameraComponent.ZoomFactor
+		cameraComponent.Zoom *= 1 - y*cameraComponent.ZoomFactor
 	}
 
 	cameraComponent.Zoom = math.Clamp(cameraComponent.Zoom, MinZoom, MaxZoom)

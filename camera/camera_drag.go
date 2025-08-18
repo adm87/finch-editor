@@ -55,7 +55,7 @@ func (s *CameraDrag) EarlyUpdate(world *ecs.World, deltaSeconds float64) error {
 	sx, sy := ebiten.CursorPosition()
 	wx, wy := matrix.Apply(float64(sx), float64(sy))
 
-	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
+	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonRight) {
 		if !dragComponent.DownPosition.IsValid() {
 			dragComponent.DownPosition.SetValue(geometry.Point64{X: wx, Y: wy})
 		}
