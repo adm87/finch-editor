@@ -4,7 +4,7 @@ import (
 	fcam "github.com/adm87/finch-core/components/camera"
 	"github.com/adm87/finch-core/ecs"
 	"github.com/adm87/finch-core/errors"
-	"github.com/adm87/finch-core/hash"
+	"github.com/adm87/finch-core/types"
 )
 
 var (
@@ -20,7 +20,7 @@ func NewCamera(world *ecs.World) (ecs.Entity, error) {
 	)
 }
 
-func FindCameraEntities(world *ecs.World) hash.HashSet[ecs.Entity] {
+func FindCameraEntities(world *ecs.World) types.HashSet[ecs.Entity] {
 	return world.FilterEntitiesByComponents(
 		fcam.CameraComponentType,
 		CameraDragComponentType,

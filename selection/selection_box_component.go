@@ -15,8 +15,8 @@ type SelectionBoxComponent struct {
 
 func NewSelectionBoxComponent() *SelectionBoxComponent {
 	return &SelectionBoxComponent{
-		SelectionStartPoint: types.NewEmptyOption[geometry.Point64](),
-		SelectionEndPoint:   types.NewEmptyOption[geometry.Point64](),
+		SelectionStartPoint: types.NewEmptyOptional[geometry.Point64](),
+		SelectionEndPoint:   types.NewEmptyOptional[geometry.Point64](),
 	}
 }
 

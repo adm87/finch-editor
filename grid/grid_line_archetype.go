@@ -3,7 +3,7 @@ package grid
 import (
 	"github.com/adm87/finch-core/ecs"
 	"github.com/adm87/finch-core/errors"
-	"github.com/adm87/finch-core/hash"
+	"github.com/adm87/finch-core/types"
 )
 
 var (
@@ -16,7 +16,7 @@ func NewGridLines(world *ecs.World) (ecs.Entity, error) {
 	)
 }
 
-func FindGridLineEntities(world *ecs.World) hash.HashSet[ecs.Entity] {
+func FindGridLineEntities(world *ecs.World) types.HashSet[ecs.Entity] {
 	return world.FilterEntitiesByComponents(
 		GridLineComponentType,
 	)

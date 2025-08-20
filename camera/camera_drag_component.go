@@ -17,8 +17,8 @@ type CameraDragComponent struct {
 
 func NewCameraDragComponent() *CameraDragComponent {
 	return &CameraDragComponent{
-		DownPosition:       types.NewEmptyOption[geometry.Point64](),
-		DragVector:         types.NewEmptyOption[geometry.Point64](),
+		DownPosition:       types.NewEmptyOptional[geometry.Point64](),
+		DragVector:         types.NewEmptyOptional[geometry.Point64](),
 		DragStartThreshold: 0.1,
 		IsDragging:         false,
 	}
