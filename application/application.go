@@ -15,6 +15,7 @@ import (
 	"github.com/adm87/finch-editor/data"
 	"github.com/adm87/finch-editor/editor"
 	"github.com/adm87/finch-resources/manifest"
+	"github.com/adm87/finch-resources/storage"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -92,14 +93,14 @@ func Update(app *finch.Application, deltaSeconds, fixedDeltaSeconds float64, fra
 
 func AddResourceFilesystems(app *finch.Application, world *ecs.World) error {
 	resourcePath := app.Config().Resources.Path
-	return app.Cache().AddFilesystems(map[string]fs.FS{
+	return storage.RegisterFileSystems(map[string]fs.FS{
 		"embedded": data.Embedded,
 		"assets":   os.DirFS(filepath.Join(resourcePath, "assets")),
 	})
 }
 
 func LoadDefaultResources(app *finch.Application) error {
-	embeddedManifest, err := manifest.GetSubManifest(app.Cache().Manifest(), "embedded")
+	embeddedManifest, err := storage.GetSubManifest("embedded")
 	if err != nil {
 		return err
 	}
@@ -107,11 +108,11 @@ func LoadDefaultResources(app *finch.Application) error {
 		parts := strings.Split(value.Path, string(filepath.Separator))
 		return len(parts) > 1 && parts[0] == "defaults"
 	})
-	if err := app.Cache().Load(names...); err != nil {
+	if err := storage.Load(names...); err != nil {
 		return err
 	}
 	for _, name := range names {
-		if err := app.Cache().SetFallback(name); err != nil {
+		if err := storage.SetFallback(name); err != nil {
 			return err
 		}
 	}

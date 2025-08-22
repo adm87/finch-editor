@@ -11,6 +11,7 @@ import (
 	"github.com/adm87/finch-editor/selection"
 	"github.com/adm87/finch-rendering/renderers/sprites"
 	"github.com/adm87/finch-rendering/rendering"
+	"github.com/adm87/finch-resources/storage"
 )
 
 func Initialize(app *finapp.Application, world *ecs.World) error {
@@ -24,23 +25,14 @@ func Initialize(app *finapp.Application, world *ecs.World) error {
 		return err
 	}
 
-	if err := app.Cache().Load("tile_0000"); err != nil {
+	if err := storage.Load("tile_0000"); err != nil {
 		return err
 	}
 
-	tile0000Img, err := app.Cache().Images().Get("tile_0000")
-	if err != nil {
-		return err
-	}
-
-	anchor := geometry.Point64{
+	spriteRenderer := sprites.NewSpriteRenderer("tile_0000", geometry.Point64{
 		X: 0.5,
 		Y: 1.0,
-	}
-
-	spriteRenderer := sprites.NewSpriteRenderer(
-		tile0000Img, anchor,
-	)
+	})
 
 	if _, err := NewTestEntity(world, -20, 0, spriteRenderer); err != nil {
 		return err
