@@ -5,19 +5,20 @@ import (
 
 	"github.com/adm87/finch-core/ecs"
 	"github.com/adm87/finch-core/errors"
-	"github.com/adm87/finch-rendering/renderers/vector"
 	"github.com/adm87/finch-rendering/rendering"
+	"github.com/adm87/finch-rendering/vector"
 )
 
 func NewSelectionBox(world *ecs.World) (ecs.Entity, error) {
-	box := vector.NewBoxRenderer()
-	box.DrawBorder = true
-	box.DrawFill = true
-	box.SetBorder(color.RGBA{R: 235, G: 203, B: 139, A: 255})
-	box.SetFill(color.RGBA{R: 235, G: 203, B: 139, A: 64})
+	boxComp := vector.NewBoxRenderComponent(10000)
+	boxComp.DrawBorder = true
+	boxComp.DrawFill = true
+	boxComp.BorderColor = color.RGBA{R: 255, G: 0, B: 0, A: 255}
+	boxComp.FillColor = color.RGBA{R: 255, G: 0, B: 0, A: 255}
 	return world.NewEntityWithComponents(
+		boxComp,
 		NewSelectionBoxComponent(),
-		rendering.NewRenderComponent(box, 1000),
+		rendering.NewVisibilityComponent(),
 	)
 }
 

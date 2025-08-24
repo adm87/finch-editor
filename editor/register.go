@@ -54,7 +54,7 @@ func RegisterECSSystems(app *finapp.Application, world *ecs.World) error {
 		// =================================================================
 		grid.NewGridLineRenderer(app.Config().Window): -1000,
 
-		rendering.NewRenderSystem(): 0,
+		rendering.NewRenderingSystem(): 0,
 	})
 }
 

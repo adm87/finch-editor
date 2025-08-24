@@ -23,7 +23,3 @@ func NewCameraPanComponent() *CameraPanComponent {
 func (c *CameraPanComponent) Type() ecs.ComponentType {
 	return CameraPanComponentType
 }
-
-func (c *CameraPanComponent) Dispose() {
-	c.IsPanning = false
-}

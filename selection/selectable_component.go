@@ -17,6 +17,3 @@ func NewSelectableComponent() *SelectableComponent {
 func (s *SelectableComponent) Type() ecs.ComponentType {
 	return SelectableComponentType
 }
-
-func (s *SelectableComponent) Dispose() {
-}

@@ -23,6 +23,3 @@ func NewSelectionBoxComponent() *SelectionBoxComponent {
 func (c *SelectionBoxComponent) Type() ecs.ComponentType {
 	return SelectionBoxComponentType
 }
-
-func (c *SelectionBoxComponent) Dispose() {
-}

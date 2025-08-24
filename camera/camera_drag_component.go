@@ -27,9 +27,3 @@ func NewCameraDragComponent() *CameraDragComponent {
 func (c *CameraDragComponent) Type() ecs.ComponentType {
 	return CameraDragComponentType
 }
-
-func (c *CameraDragComponent) Dispose() {
-	c.DownPosition.Invalidate()
-	c.DragVector.Invalidate()
-	c.IsDragging = false
-}

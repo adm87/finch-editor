@@ -1,11 +1,11 @@
 package selection
 
 import (
-	"github.com/adm87/finch-core/components/camera"
 	"github.com/adm87/finch-core/ecs"
 	"github.com/adm87/finch-core/geometry"
-	"github.com/adm87/finch-rendering/renderers/vector"
+	"github.com/adm87/finch-editor/camera"
 	"github.com/adm87/finch-rendering/rendering"
+	"github.com/adm87/finch-rendering/vector"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -44,14 +44,13 @@ func (s *SelectionBoxUpdate) EarlyUpdate(world *ecs.World, deltaSeconds float64)
 	}
 
 	selectionBox, _, _ := ecs.GetComponent[*SelectionBoxComponent](world, selectionBoxEntity, SelectionBoxComponentType)
-	renderComponent, _, _ := ecs.GetComponent[*rendering.RenderComponent](world, selectionBoxEntity, rendering.RenderComponentType)
-
-	boxRenderer, ok := renderComponent.Renderer.(*vector.BoxRenderer)
+	boxComp, _, _ := ecs.GetComponent[*vector.BoxRenderComponent](world, selectionBoxEntity, vector.BoxRenderComponentType)
+	visibleComp, _, _ := ecs.GetComponent[*rendering.VisibilityComponent](world, selectionBoxEntity, rendering.VisibilityComponentType)
 
 	if !ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
 		selectionBox.SelectionStartPoint.Invalidate()
 		selectionBox.SelectionEndPoint.Invalidate()
-		renderComponent.IsVisible = false
+		visibleComp.IsVisible = false
 		return nil
 	}
 
@@ -72,15 +71,10 @@ func (s *SelectionBoxUpdate) EarlyUpdate(world *ecs.World, deltaSeconds float64)
 	}
 	selectionBox.SelectionEndPoint.SetValue(geometry.Point64{X: wx, Y: wy})
 
-	if !ok {
-		return nil
-	}
+	boxComp.Min = selectionBox.SelectionStartPoint.Value()
+	boxComp.Max = selectionBox.SelectionEndPoint.Value()
 
-	start := selectionBox.SelectionStartPoint.Value()
-	end := selectionBox.SelectionEndPoint.Value()
-
-	boxRenderer.SetArea(start, end)
-	renderComponent.IsVisible = true
+	visibleComp.IsVisible = true
 
 	return nil
 }

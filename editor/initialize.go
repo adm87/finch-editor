@@ -1,16 +1,17 @@
 package editor
 
 import (
+	"math/rand"
+
 	finapp "github.com/adm87/finch-application/application"
-	"github.com/adm87/finch-core/components/bounds"
 	"github.com/adm87/finch-core/components/transform"
 	"github.com/adm87/finch-core/ecs"
 	"github.com/adm87/finch-core/geometry"
 	"github.com/adm87/finch-editor/camera"
 	"github.com/adm87/finch-editor/grid"
 	"github.com/adm87/finch-editor/selection"
-	"github.com/adm87/finch-rendering/renderers/sprites"
 	"github.com/adm87/finch-rendering/rendering"
+	"github.com/adm87/finch-rendering/sprites"
 	"github.com/adm87/finch-resources/storage"
 )
 
@@ -29,32 +30,40 @@ func Initialize(app *finapp.Application, world *ecs.World) error {
 		return err
 	}
 
-	spriteRenderer := sprites.NewSpriteRenderer("tile_0000", geometry.Point64{
-		X: 0.5,
-		Y: 1.0,
-	})
+	min := -300
+	max := 300
 
-	if _, err := NewTestEntity(world, -20, 0, spriteRenderer); err != nil {
-		return err
-	}
-	if _, err := NewTestEntity(world, 20, 0, spriteRenderer); err != nil {
-		return err
+	for i := 0; i < 5000; i++ {
+		x := rand.Intn(max-min) + min
+		y := rand.Intn(max-min) + min
+		if _, err := NewTestEntity(world, float64(x), float64(y), i); err != nil {
+			return err
+		}
 	}
 
 	return nil
 }
 
-func NewTestEntity(world *ecs.World, x, y float64, spriteRenderer *sprites.SpriteRenderer) (ecs.Entity, error) {
+func NewTestEntity(world *ecs.World, x, y float64, z int) (ecs.Entity, error) {
 	t := transform.NewTransformComponent()
 	t.SetPosition(geometry.Point64{X: x, Y: y})
 
-	return world.NewEntityWithComponents(
-		rendering.NewRenderComponent(spriteRenderer, 0),
-		t,
-		bounds.NewBoundsComponent(
-			spriteRenderer.Size(),
-			geometry.Point64{X: 0.5, Y: 1.0},
-		),
-		selection.NewSelectableComponent(),
-	)
+	sprite := sprites.NewSpriteRenderComponent("tile_0000", z)
+	sprite.Anchor = geometry.Point64{X: 0.5, Y: 0.5}
+
+	img, _ := storage.ImageHandle(sprite.ImageID).Get()
+	origin := geometry.Point64{
+		X: float64(img.Bounds().Dx()) * sprite.Anchor.X,
+		Y: float64(img.Bounds().Dy()) * sprite.Anchor.Y,
+	}
+
+	visibiliy := rendering.NewVisibilityComponent()
+	visibiliy.VisibleArea.SetValue(geometry.Rectangle64{
+		X:      -origin.X,
+		Y:      -origin.Y,
+		Width:  float64(img.Bounds().Dx()),
+		Height: float64(img.Bounds().Dy()),
+	})
+
+	return world.NewEntityWithComponents(t, sprite, visibiliy)
 }

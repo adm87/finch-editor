@@ -20,10 +20,6 @@ func (c *GridLineComponent) Type() ecs.ComponentType {
 	return GridLineComponentType
 }
 
-func (c *GridLineComponent) Dispose() {
-
-}
-
 func NewGridLineComponent() *GridLineComponent {
 	return &GridLineComponent{
 		CellSize:    32.0,
