@@ -4,6 +4,7 @@ import (
 	"math/rand"
 
 	finapp "github.com/adm87/finch-application/application"
+	"github.com/adm87/finch-core/components/bounds"
 	"github.com/adm87/finch-core/components/transform"
 	"github.com/adm87/finch-core/ecs"
 	"github.com/adm87/finch-core/geometry"
@@ -33,7 +34,7 @@ func Initialize(app *finapp.Application, world *ecs.World) error {
 	min := -300
 	max := 300
 
-	for i := 0; i < 5000; i++ {
+	for i := 0; i < 100; i++ {
 		x := rand.Intn(max-min) + min
 		y := rand.Intn(max-min) + min
 		if _, err := NewTestEntity(world, float64(x), float64(y), i); err != nil {
@@ -57,13 +58,21 @@ func NewTestEntity(world *ecs.World, x, y float64, z int) (ecs.Entity, error) {
 		Y: float64(img.Bounds().Dy()) * sprite.Anchor.Y,
 	}
 
-	visibiliy := rendering.NewVisibilityComponent()
-	visibiliy.VisibleArea.SetValue(geometry.Rectangle64{
+	visibility := rendering.NewVisibilityComponent()
+	visibility.VisibleArea.SetValue(geometry.Rectangle64{
 		X:      -origin.X,
 		Y:      -origin.Y,
 		Width:  float64(img.Bounds().Dx()),
 		Height: float64(img.Bounds().Dy()),
 	})
 
-	return world.NewEntityWithComponents(t, sprite, visibiliy)
+	bounds := bounds.NewBoundsComponent(
+		geometry.Point64{
+			X: float64(img.Bounds().Dx()),
+			Y: float64(img.Bounds().Dy()),
+		},
+		sprite.Anchor,
+	)
+
+	return world.NewEntityWithComponents(t, sprite, visibility, bounds)
 }
