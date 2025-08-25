@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	finch "github.com/adm87/finch-application/application"
+
 	"github.com/adm87/finch-application/config"
 	"github.com/adm87/finch-core/ecs"
 	"github.com/adm87/finch-core/keys"
@@ -17,6 +18,9 @@ import (
 	"github.com/adm87/finch-resources/manifest"
 	"github.com/adm87/finch-resources/storage"
 	"github.com/hajimehoshi/ebiten/v2"
+
+	rendering "github.com/adm87/finch-rendering/module"
+	resources "github.com/adm87/finch-resources/module"
 )
 
 var (
@@ -46,19 +50,27 @@ var Application = finch.NewApplicationWithConfig(
 			ClearColor:      color.RGBA{R: 29, G: 33, B: 41, A: 255},
 		},
 	}).
+	WithRegistration(Register).
 	WithStartup(Start).
 	WithShutdown(Shutdown).
 	WithDraw(Draw).
 	WithUpdate(Update)
 
-func Start(app *finch.Application) error {
-	if err := AddResourceFilesystems(app, world); err != nil {
+func Register(app *finch.Application) error {
+	if err := RegisterModules(); err != nil {
 		return err
 	}
-	if err := LoadDefaultResources(app); err != nil {
+	if err := RegisterResourceFileSystems(app, world); err != nil {
 		return err
 	}
 	if err := editor.Register(app, world); err != nil {
+		return err
+	}
+	return nil
+}
+
+func Start(app *finch.Application) error {
+	if err := LoadDefaultResources(app); err != nil {
 		return err
 	}
 	if err := editor.Initialize(app, world); err != nil {
@@ -91,7 +103,17 @@ func Update(app *finch.Application, deltaSeconds, fixedDeltaSeconds float64, fra
 	return nil
 }
 
-func AddResourceFilesystems(app *finch.Application, world *ecs.World) error {
+func RegisterModules() error {
+	if err := rendering.RegisterModule(); err != nil {
+		return err
+	}
+	if err := resources.RegisterModule(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func RegisterResourceFileSystems(app *finch.Application, world *ecs.World) error {
 	resourcePath := app.Config().Resources.Path
 	return storage.RegisterFileSystems(map[string]fs.FS{
 		"embedded": data.Embedded,
@@ -112,7 +134,7 @@ func LoadDefaultResources(app *finch.Application) error {
 		return err
 	}
 	for _, name := range names {
-		if err := storage.SetFallback(name); err != nil {
+		if err := storage.SetDefault(name); err != nil {
 			return err
 		}
 	}

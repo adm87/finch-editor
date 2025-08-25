@@ -1,8 +1,9 @@
 package editor
 
 import (
-	finapp "github.com/adm87/finch-application/application"
-	finmsg "github.com/adm87/finch-application/messages"
+	finch "github.com/adm87/finch-application/application"
+
+	"github.com/adm87/finch-application/messages"
 	"github.com/adm87/finch-core/ecs"
 	"github.com/adm87/finch-core/keys"
 	"github.com/adm87/finch-editor/camera"
@@ -13,7 +14,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-func Register(app *finapp.Application, world *ecs.World) error {
+func Register(app *finch.Application, world *ecs.World) error {
 	if err := RegisterECSSystems(app, world); err != nil {
 		return err
 	}
@@ -29,7 +30,7 @@ func Register(app *finapp.Application, world *ecs.World) error {
 	return nil
 }
 
-func RegisterECSSystems(app *finapp.Application, world *ecs.World) error {
+func RegisterECSSystems(app *finch.Application, world *ecs.World) error {
 	return world.RegisterSystems(map[ecs.System]int{
 		// =================================================================
 		// Early Update Systems
@@ -58,20 +59,20 @@ func RegisterECSSystems(app *finapp.Application, world *ecs.World) error {
 	})
 }
 
-func RegisterDebugSystems(app *finapp.Application, world *ecs.World) error {
+func RegisterDebugSystems(app *finch.Application, world *ecs.World) error {
 	return world.RegisterSystems(map[ecs.System]int{
 		debug.NewDebugBoundsRenderer(): 10000,
 	})
 }
 
-func RegisterMessageHandlers(app *finapp.Application, world *ecs.World) error {
-	if err := finmsg.ApplicationResize.Subscribe(camera.NewCameraResizeHandler(world)); err != nil {
+func RegisterMessageHandlers(app *finch.Application, world *ecs.World) error {
+	if err := messages.ApplicationResize.Subscribe(camera.NewCameraResizeHandler(world)); err != nil {
 		return err
 	}
 	return nil
 }
 
-func RegisterKeyCommands(app *finapp.Application, world *ecs.World) error {
+func RegisterKeyCommands(app *finch.Application, world *ecs.World) error {
 	if err := keys.RegisterAction(ebiten.KeyF1, keys.KeyPhaseRelease, grid.NewGridLineToggle(world)); err != nil {
 		return err
 	}
