@@ -22,7 +22,7 @@ func (c *GridLineComponent) Type() ecs.ComponentType {
 
 func NewGridLineComponent() *GridLineComponent {
 	return &GridLineComponent{
-		CellSize:    32.0,
+		CellSize:    18.0,
 		MaxGridSize: 16.0,
 		MinGridSize: 0.25,
 		GridStates: []GridLineState{
