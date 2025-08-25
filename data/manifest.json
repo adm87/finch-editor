@@ -12,11 +12,11 @@
   "tilemap_0000": {
     "root": "assets",
     "path": "tilemaps/tilemap_0000.tilemap",
-    "size": 54
+    "size": 87
   },
   "tileset_0000": {
     "root": "assets",
     "path": "tilesets/tileset_0000.tileset",
-    "size": 112
+    "size": 167
   }
 }

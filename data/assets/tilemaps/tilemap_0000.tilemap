@@ -1,4 +1,6 @@
-rows: 10
-columns: 10
-tileset_id: tileset_0000
-data: []
+{
+    "rows": 10,
+    "columns": 10,
+    "tileset_id": "tileset_0000",
+    "data": []
+}

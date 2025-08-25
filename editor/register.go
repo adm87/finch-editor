@@ -53,7 +53,7 @@ func RegisterECSSystems(app *finch.Application, world *ecs.World) error {
 		// =================================================================
 		// Rendering Systems
 		// =================================================================
-		grid.NewGridLineRenderer(app.Config().Window): -1000,
+		grid.NewGridLineRenderer(app.Config().Window): -1,
 
 		rendering.NewRenderingSystem(): 0,
 	})
