@@ -21,6 +21,7 @@ import (
 
 	rendering "github.com/adm87/finch-rendering/module"
 	resources "github.com/adm87/finch-resources/module"
+	tilemap "github.com/adm87/finch-tilemap/module"
 )
 
 var (
@@ -108,6 +109,9 @@ func RegisterModules() error {
 		return err
 	}
 	if err := resources.RegisterModule(); err != nil {
+		return err
+	}
+	if err := tilemap.RegisterModule(); err != nil {
 		return err
 	}
 	return nil

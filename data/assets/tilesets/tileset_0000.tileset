@@ -1,0 +1,10 @@
+image_id: tileset_0000
+rows: 9
+columns: 20
+tile_width: 18
+tile_height: 18
+padding:
+  top: 0
+  bottom: 1
+  left: 0
+  right: 1

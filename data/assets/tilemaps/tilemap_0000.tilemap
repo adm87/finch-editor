@@ -1,0 +1,5 @@
+rows: 10
+columns: 10
+layers:
+- tileset_id: tileset_0000
+  data: []
