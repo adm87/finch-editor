@@ -20,6 +20,9 @@
 !cmd/
 !cmd/**/*
 
+!commands/
+!commands/**/*
+
 !data/
 !data/**/*
 
