@@ -9,6 +9,7 @@ require (
 	github.com/adm87/finch-resources v0.0.0-20250825161308-5e27e10d74c0
 	github.com/adm87/finch-tilemap v0.0.0-20250825184954-69136df9a4e4
 	github.com/hajimehoshi/ebiten/v2 v2.8.8
+	github.com/sqweek/dialog v0.0.0-20240226140203-065105509627
 )
 
 require (
@@ -23,7 +24,6 @@ require (
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/spf13/cobra v1.9.1 // indirect
 	github.com/spf13/pflag v1.0.6 // indirect
-	github.com/sqweek/dialog v0.0.0-20240226140203-065105509627 // indirect
 	golang.org/x/image v0.24.0 // indirect
 	golang.org/x/sync v0.16.0 // indirect
 	golang.org/x/sys v0.30.0 // indirect
