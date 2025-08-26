@@ -8,7 +8,6 @@ import (
 	"github.com/adm87/finch-core/keys"
 	"github.com/adm87/finch-editor/camera"
 	"github.com/adm87/finch-editor/commands"
-	"github.com/adm87/finch-editor/debug"
 	"github.com/adm87/finch-editor/grid"
 	"github.com/adm87/finch-editor/selection"
 	"github.com/adm87/finch-rendering/rendering"
@@ -17,9 +16,6 @@ import (
 
 func Register(app *finch.Application, world *ecs.World) error {
 	if err := RegisterECSSystems(app, world); err != nil {
-		return err
-	}
-	if err := RegisterDebugSystems(app, world); err != nil {
 		return err
 	}
 	if err := RegisterMessageHandlers(app, world); err != nil {
@@ -60,12 +56,6 @@ func RegisterECSSystems(app *finch.Application, world *ecs.World) error {
 	})
 }
 
-func RegisterDebugSystems(app *finch.Application, world *ecs.World) error {
-	return world.RegisterSystems(map[ecs.System]int{
-		debug.NewDebugBoundsRenderer(): 10000,
-	})
-}
-
 func RegisterMessageHandlers(app *finch.Application, world *ecs.World) error {
 	if err := messages.ApplicationResize.Subscribe(camera.NewCameraResizeHandler(world)); err != nil {
 		return err
@@ -77,7 +67,13 @@ func RegisterKeyCommands(app *finch.Application, world *ecs.World) error {
 	if err := keys.RegisterAction(ebiten.KeyEscape, keys.KeyPhaseRelease, commands.NewCloseApplication(app)); err != nil {
 		return err
 	}
-	if err := keys.RegisterAction(ebiten.KeyF9, keys.KeyPhaseRelease, grid.NewGridLineToggle(world)); err != nil {
+	if err := keys.RegisterAction(ebiten.KeyF5, keys.KeyPhaseRelease, commands.NewSaveTilemap(app)); err != nil {
+		return err
+	}
+	if err := keys.RegisterAction(ebiten.KeyF8, keys.KeyPhaseRelease, commands.NewLoadTilemap(app)); err != nil {
+		return err
+	}
+	if err := keys.RegisterAction(ebiten.KeyF9, keys.KeyPhaseRelease, commands.NewToggleGridLines(world)); err != nil {
 		return err
 	}
 	if err := keys.RegisterAction(ebiten.KeyF11, keys.KeyPhaseRelease, commands.NewFullscreenToggle(app.Config().Window)); err != nil {
