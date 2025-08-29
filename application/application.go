@@ -4,7 +4,7 @@ import (
 	"image/color"
 	"io/fs"
 	"os"
-	"path/filepath"
+	"path"
 	"strings"
 
 	finch "github.com/adm87/finch-application/application"
@@ -121,7 +121,7 @@ func RegisterResourceFileSystems(app *finch.Application, world *ecs.World) error
 	resourcePath := app.Config().Resources.Path
 	return storage.RegisterFileSystems(map[string]fs.FS{
 		"embedded": data.Embedded,
-		"assets":   os.DirFS(filepath.Join(resourcePath, "assets")),
+		"assets":   os.DirFS(path.Join(resourcePath, "assets")),
 	})
 }
 
@@ -131,7 +131,7 @@ func LoadDefaultResources(app *finch.Application) error {
 		return err
 	}
 	names := linq.SelectKeys(embeddedManifest, func(key string, value manifest.ResourceMetadata) bool {
-		parts := strings.Split(value.Path, string(filepath.Separator))
+		parts := strings.Split(value.Path, "/")
 		return len(parts) > 1 && parts[0] == "defaults"
 	})
 	if err := storage.Load(names...); err != nil {

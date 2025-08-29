@@ -10,6 +10,7 @@ import (
 	"github.com/adm87/finch-editor/commands"
 	"github.com/adm87/finch-editor/grid"
 	"github.com/adm87/finch-editor/selection"
+	"github.com/adm87/finch-editor/tilemaps"
 	"github.com/adm87/finch-rendering/rendering"
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -39,6 +40,8 @@ func RegisterECSSystems(app *finch.Application, world *ecs.World) error {
 		camera.NewCameraPan():  1,
 		camera.NewCameraZoom(): 2,
 
+		tilemaps.NewTilemapEditor(): 3,
+
 		// =================================================================
 		// Fixed Update Systems
 		// =================================================================
@@ -53,6 +56,8 @@ func RegisterECSSystems(app *finch.Application, world *ecs.World) error {
 		grid.NewGridLineRenderer(app.Config().Window): -1,
 
 		rendering.NewRenderingSystem(): 0,
+
+		tilemaps.NewTilemapEditorRender(): 1,
 	})
 }
 
