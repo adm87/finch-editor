@@ -9,7 +9,6 @@ import (
 	"github.com/adm87/finch-editor/camera"
 	"github.com/adm87/finch-editor/commands"
 	"github.com/adm87/finch-editor/grid"
-	"github.com/adm87/finch-editor/selection"
 	"github.com/adm87/finch-editor/tilemaps"
 	"github.com/adm87/finch-rendering/rendering"
 	"github.com/hajimehoshi/ebiten/v2"
@@ -33,14 +32,11 @@ func RegisterECSSystems(app *finch.Application, world *ecs.World) error {
 		// =================================================================
 		// Early Update Systems
 		// =================================================================
-		selection.NewSelectionBoxUpdate(): -2,
-		selection.NewSelectionSystem():    -1,
-
 		camera.NewCameraDrag(): 0,
 		camera.NewCameraPan():  1,
 		camera.NewCameraZoom(): 2,
 
-		tilemaps.NewTilemapEditor(): 3,
+		tilemaps.NewTilemapEditorSystem(app): 3,
 
 		// =================================================================
 		// Fixed Update Systems
@@ -72,10 +68,10 @@ func RegisterKeyCommands(app *finch.Application, world *ecs.World) error {
 	if err := keys.RegisterAction(ebiten.KeyEscape, keys.KeyPhaseRelease, commands.NewCloseApplication(app)); err != nil {
 		return err
 	}
-	if err := keys.RegisterAction(ebiten.KeyF5, keys.KeyPhaseRelease, commands.NewSaveTilemap(app)); err != nil {
+	if err := keys.RegisterAction(ebiten.KeyF5, keys.KeyPhaseRelease, commands.NewPromptSaveTilemap(app)); err != nil {
 		return err
 	}
-	if err := keys.RegisterAction(ebiten.KeyF8, keys.KeyPhaseRelease, commands.NewLoadTilemap(app)); err != nil {
+	if err := keys.RegisterAction(ebiten.KeyF8, keys.KeyPhaseRelease, commands.NewPromptLoadTilemap(app.Config().Resources.Path, world)); err != nil {
 		return err
 	}
 	if err := keys.RegisterAction(ebiten.KeyF9, keys.KeyPhaseRelease, commands.NewToggleGridLines(world)); err != nil {

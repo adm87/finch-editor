@@ -7,18 +7,18 @@ import (
 	"github.com/sqweek/dialog"
 )
 
-type LoadTilemap struct {
+type PromptSaveTilemap struct {
 	app      *finch.Application
 	lastOpen string
 }
 
-func NewLoadTilemap(app *finch.Application) *LoadTilemap {
-	return &LoadTilemap{
+func NewPromptSaveTilemap(app *finch.Application) *PromptSaveTilemap {
+	return &PromptSaveTilemap{
 		app: app,
 	}
 }
 
-func (c *LoadTilemap) Execute() error {
+func (c *PromptSaveTilemap) Execute() error {
 	startDir := c.app.Config().Resources.Path
 	if c.lastOpen != "" {
 		startDir = c.lastOpen
@@ -27,9 +27,9 @@ func (c *LoadTilemap) Execute() error {
 	path, err := dialog.
 		File().
 		SetStartDir(startDir).
-		Title("Load Tilemap").
+		Title("Save Tilemap").
 		Filter("Tilemap Files", "tilemap").
-		Load()
+		Save()
 	if err != nil {
 		if err.Error() == "Cancelled" {
 			return nil
