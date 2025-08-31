@@ -40,5 +40,11 @@ func (c *TilemapEditorPlaceTile) Undo() error {
 }
 
 func (c *TilemapEditorPlaceTile) Redo() error {
-	return c.Execute()
+	tilemap, err := tm.Cache().Get(c.tilemapID)
+	if err != nil {
+		return err
+	}
+	tilemap.Data[c.tilePos] = c.newTileID
+	tilemap.IsDirty = true
+	return nil
 }
