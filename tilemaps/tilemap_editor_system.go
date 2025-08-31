@@ -89,18 +89,7 @@ func (t *TilemapEditorSystem) EarlyUpdate(world *ecs.World, deltaSeconds float64
 	}
 
 	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
-		tx := int((editorComp.Cursor.X - editorComp.Border.X) / float64(tileset.TileSize))
-		ty := int((editorComp.Cursor.Y - editorComp.Border.Y) / float64(tileset.TileSize))
-
-		tx = math.Clamp(tx, 0, tilemap.Columns-1)
-		ty = math.Clamp(ty, 0, tilemap.Rows-1)
-
-		tile := 0
-		if ebiten.IsKeyPressed(ebiten.KeyControl) {
-			tile = -1
-		}
-
-		if err := t.place_tile(tx, ty, tile, tilemap); err != nil {
+		if err := t.place_tile(world, editorComp, tilemap, tileset, editorComp.LoadedTilemap); err != nil {
 			return err
 		}
 	}
@@ -157,14 +146,22 @@ func (t *TilemapEditorSystem) update_editor_cursor(world *ecs.World, editorComp 
 	return nil
 }
 
-func (t *TilemapEditorSystem) place_tile(x, y int, tile int, tilemap *tm.Tilemap) error {
-	i := y*tilemap.Columns + x
+func (t *TilemapEditorSystem) place_tile(world *ecs.World, editorComp *TilemapEditorComponent, tilemap *tm.Tilemap, tileset *ts.Tileset, tilemapID string) error {
+	tx := int((editorComp.Cursor.X - editorComp.Border.X) / float64(tileset.TileSize))
+	ty := int((editorComp.Cursor.Y - editorComp.Border.Y) / float64(tileset.TileSize))
 
+	tx = math.Clamp(tx, 0, tilemap.Columns-1)
+	ty = math.Clamp(ty, 0, tilemap.Rows-1)
+
+	tile := 0
+	if ebiten.IsKeyPressed(ebiten.KeyControl) {
+		tile = -1
+	}
+
+	i := ty*tilemap.Columns + tx
 	if tilemap.Data[i] == tile {
 		return nil
 	}
 
-	tilemap.Data[i] = tile
-	tilemap.IsDirty = true
-	return nil
+	return t.app.CommandStack().ExecuteCommand(NewPlaceTileCommand(tilemapID, tile, i))
 }

@@ -18,6 +18,7 @@ import (
 	"github.com/adm87/finch-resources/manifest"
 	"github.com/adm87/finch-resources/storage"
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 
 	rendering "github.com/adm87/finch-rendering/module"
 	resources "github.com/adm87/finch-resources/module"
@@ -95,11 +96,19 @@ func Draw(app *finch.Application, screen *ebiten.Image) error {
 
 // Update processes the world and UI update systems
 func Update(app *finch.Application, deltaSeconds, fixedDeltaSeconds float64, frames int) error {
-	if err := keys.Poll(); err != nil {
+	systemControlExecuted, err := PollSystemControls(app)
+	if err != nil {
 		return err
 	}
-	if err := world.ProcessUpdateSystems(deltaSeconds, fixedDeltaSeconds, frames); err != nil {
-		return err
+	if !app.Closing() {
+		if !systemControlExecuted {
+			if err := keys.Poll(); err != nil {
+				return err
+			}
+		}
+		if err := world.ProcessUpdateSystems(deltaSeconds, fixedDeltaSeconds, frames); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -143,4 +152,24 @@ func LoadDefaultResources(app *finch.Application) error {
 		}
 	}
 	return nil
+}
+
+func PollSystemControls(app *finch.Application) (bool, error) {
+	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+		app.Close()
+		return true, nil
+	}
+	if ebiten.IsKeyPressed(ebiten.KeyControl) {
+		switch {
+		case inpututil.IsKeyJustPressed(ebiten.KeyZ):
+			if err := app.CommandStack().Undo(); err != nil {
+				return true, err
+			}
+		case inpututil.IsKeyJustPressed(ebiten.KeyY):
+			if err := app.CommandStack().Redo(); err != nil {
+				return true, err
+			}
+		}
+	}
+	return false, nil
 }
