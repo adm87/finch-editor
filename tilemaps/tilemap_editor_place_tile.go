@@ -24,8 +24,7 @@ func (c *TilemapEditorPlaceTile) Execute() error {
 		return err
 	}
 	c.oldTileID = tilemap.Data[c.tilePos]
-	tilemap.Data[c.tilePos] = c.newTileID
-	tilemap.IsDirty = true
+	c.set_tile_at(c.tilePos, c.newTileID, tilemap)
 	return nil
 }
 
@@ -34,8 +33,7 @@ func (c *TilemapEditorPlaceTile) Undo() error {
 	if err != nil {
 		return err
 	}
-	tilemap.Data[c.tilePos] = c.oldTileID
-	tilemap.IsDirty = true
+	c.set_tile_at(c.tilePos, c.oldTileID, tilemap)
 	return nil
 }
 
@@ -44,7 +42,11 @@ func (c *TilemapEditorPlaceTile) Redo() error {
 	if err != nil {
 		return err
 	}
-	tilemap.Data[c.tilePos] = c.newTileID
-	tilemap.IsDirty = true
+	c.set_tile_at(c.tilePos, c.newTileID, tilemap)
 	return nil
+}
+
+func (c *TilemapEditorPlaceTile) set_tile_at(i int, tile int, tilemap *tm.Tilemap) {
+	tilemap.Data[i] = tile
+	tilemap.IsDirty = true
 }

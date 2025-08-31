@@ -50,7 +50,7 @@ func (t *TilemapEditorRender) Render(world *ecs.World, buffer *ebiten.Image) err
 		return err
 	}
 
-	if editorComp.LoadedTilemap == "" {
+	if editorComp.LoadedTilemapID == "" {
 		return nil // No loaded tilemap, nothing to render.
 	}
 

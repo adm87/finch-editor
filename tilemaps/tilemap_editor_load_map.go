@@ -22,8 +22,8 @@ func (c *TilemapEditorLoadMap) Execute() error {
 	if err != nil {
 		return err
 	}
-	c.oldTilemapID = tilemapEditor.LoadedTilemap
-	tilemapEditor.LoadedTilemap = c.newTilemapID
+	c.oldTilemapID = tilemapEditor.LoadedTilemapID
+	tilemapEditor.LoadedTilemapID = c.newTilemapID
 	return nil
 }
 
@@ -32,7 +32,7 @@ func (c *TilemapEditorLoadMap) Undo() error {
 	if err != nil {
 		return err
 	}
-	tilemapEditor.LoadedTilemap = c.oldTilemapID
+	tilemapEditor.LoadedTilemapID = c.oldTilemapID
 	return nil
 }
 
@@ -41,6 +41,6 @@ func (c *TilemapEditorLoadMap) Redo() error {
 	if err != nil {
 		return err
 	}
-	tilemapEditor.LoadedTilemap = c.newTilemapID
+	tilemapEditor.LoadedTilemapID = c.newTilemapID
 	return nil
 }

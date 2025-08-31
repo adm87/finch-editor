@@ -62,12 +62,12 @@ func (t *TilemapEditorSystem) EarlyUpdate(world *ecs.World, deltaSeconds float64
 		return err
 	}
 
-	if editorComp.LoadedTilemap == "" {
+	if editorComp.LoadedTilemapID == "" {
 		return nil
 	}
 
-	updateBorder := tilemapComp.TilemapID != editorComp.LoadedTilemap
-	if updateBorder {
+	isTilemapChanged := tilemapComp.TilemapID != editorComp.LoadedTilemapID
+	if isTilemapChanged {
 		if err := t.load_tilemap(tilemapComp, editorComp); err != nil {
 			return err
 		}
@@ -78,7 +78,7 @@ func (t *TilemapEditorSystem) EarlyUpdate(world *ecs.World, deltaSeconds float64
 		return err
 	}
 
-	if updateBorder {
+	if isTilemapChanged {
 		if err := t.update_editor_border(editorComp, transformComp, tilemap, tileset); err != nil {
 			return err
 		}
@@ -89,7 +89,7 @@ func (t *TilemapEditorSystem) EarlyUpdate(world *ecs.World, deltaSeconds float64
 	}
 
 	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
-		if err := t.place_tile(world, editorComp, tilemap, tileset, editorComp.LoadedTilemap); err != nil {
+		if err := t.place_tile(world, editorComp, tilemap, tileset, editorComp.LoadedTilemapID); err != nil {
 			return err
 		}
 	}
@@ -98,7 +98,7 @@ func (t *TilemapEditorSystem) EarlyUpdate(world *ecs.World, deltaSeconds float64
 }
 
 func (t *TilemapEditorSystem) load_tilemap(tilemapComp *tm.TilemapComponent, editorComp *TilemapEditorComponent) error {
-	tilemapComp.TilemapID = editorComp.LoadedTilemap
+	tilemapComp.TilemapID = editorComp.LoadedTilemapID
 	// TODO - make sure all dependencies are loaded for the tilemap
 
 	t.app.SetTitleContext(tilemapComp.TilemapID)
