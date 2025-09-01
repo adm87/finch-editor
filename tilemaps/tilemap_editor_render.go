@@ -45,13 +45,18 @@ func (t *TilemapEditorRender) Type() ecs.SystemType {
 }
 
 func (t *TilemapEditorRender) Render(world *ecs.World, buffer *ebiten.Image) error {
-	editorComp, err := FindTilemapEditorComponent(world)
+	tilemapComp, err := FindTilemapComponent(world)
 	if err != nil {
 		return err
 	}
 
-	if editorComp.LoadedTilemapID == "" {
+	if tilemapComp.TilemapID == "" {
 		return nil // No loaded tilemap, nothing to render.
+	}
+
+	editorComp, err := FindTilemapEditorComponent(world)
+	if err != nil {
+		return err
 	}
 
 	cameraComp, err := camera.FindCameraComponent(world)

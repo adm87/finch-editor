@@ -9,6 +9,7 @@ import (
 	"github.com/adm87/finch-core/geometry"
 	"github.com/adm87/finch-core/math"
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 
 	finch "github.com/adm87/finch-application/application"
 	tm "github.com/adm87/finch-tilemap/tilemaps"
@@ -20,13 +21,21 @@ var TilemapEditorSystemType = ecs.NewSystemType[*TilemapEditorSystem]()
 type TilemapEditorSystem struct {
 	app *finch.Application
 
-	enabled bool
+	enabled       bool
+	tilePlacement *TilemapEditorTilePlacement
+}
+
+type TilePlacementInfo struct {
+	Position  int
+	NewTileID int
+	OldTileID int
 }
 
 func NewTilemapEditorSystem(app *finch.Application) *TilemapEditorSystem {
 	return &TilemapEditorSystem{
-		app:     app,
-		enabled: true,
+		app:           app,
+		enabled:       true,
+		tilePlacement: nil,
 	}
 }
 
@@ -47,27 +56,22 @@ func (t *TilemapEditorSystem) Disable() {
 }
 
 func (t *TilemapEditorSystem) EarlyUpdate(world *ecs.World, deltaSeconds float64) error {
-	editorComp, err := FindTilemapEditorComponent(world)
-	if err != nil {
-		return err
-	}
-
 	tilemapComp, err := FindTilemapComponent(world)
 	if err != nil {
 		return err
 	}
 
-	transformComp, err := FindTilemapEditorTransform(world)
+	if tilemapComp.TilemapID == "" {
+		return nil
+	}
+
+	editorComp, err := FindTilemapEditorComponent(world)
 	if err != nil {
 		return err
 	}
 
-	if editorComp.LoadedTilemapID == "" {
-		return nil
-	}
-
-	isTilemapChanged := tilemapComp.TilemapID != editorComp.LoadedTilemapID
-	if isTilemapChanged {
+	hasTilemapChanged := tilemapComp.TilemapID != editorComp.LoadedTilemapID
+	if hasTilemapChanged {
 		if err := t.load_tilemap(tilemapComp, editorComp); err != nil {
 			return err
 		}
@@ -78,7 +82,12 @@ func (t *TilemapEditorSystem) EarlyUpdate(world *ecs.World, deltaSeconds float64
 		return err
 	}
 
-	if isTilemapChanged {
+	transformComp, err := FindTilemapEditorTransform(world)
+	if err != nil {
+		return err
+	}
+
+	if hasTilemapChanged {
 		if err := t.update_editor_border(editorComp, transformComp, tilemap, tileset); err != nil {
 			return err
 		}
@@ -88,18 +97,26 @@ func (t *TilemapEditorSystem) EarlyUpdate(world *ecs.World, deltaSeconds float64
 		return err
 	}
 
-	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
-		if err := t.place_tile(world, editorComp, tilemap, tileset, editorComp.LoadedTilemapID); err != nil {
+	switch {
+	case inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft):
+		t.tilePlacement = NewTilemapEditorTilePlacement(editorComp.LoadedTilemapID)
+
+	case inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft):
+		if err := t.app.CommandStack().ExecuteCommand(t.tilePlacement); err != nil {
 			return err
 		}
+		t.tilePlacement = nil
+	}
+
+	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
+		t.place_tile(world, editorComp, tilemap, tileset, tilemapComp.TilemapID)
 	}
 
 	return nil
 }
 
 func (t *TilemapEditorSystem) load_tilemap(tilemapComp *tm.TilemapComponent, editorComp *TilemapEditorComponent) error {
-	tilemapComp.TilemapID = editorComp.LoadedTilemapID
-	// TODO - make sure all dependencies are loaded for the tilemap
+	editorComp.LoadedTilemapID = tilemapComp.TilemapID
 
 	t.app.SetTitleContext(tilemapComp.TilemapID)
 	return nil
@@ -146,7 +163,7 @@ func (t *TilemapEditorSystem) update_editor_cursor(world *ecs.World, editorComp 
 	return nil
 }
 
-func (t *TilemapEditorSystem) place_tile(world *ecs.World, editorComp *TilemapEditorComponent, tilemap *tm.Tilemap, tileset *ts.Tileset, tilemapID string) error {
+func (t *TilemapEditorSystem) place_tile(world *ecs.World, editorComp *TilemapEditorComponent, tilemap *tm.Tilemap, tileset *ts.Tileset, tilemapID string) {
 	tx := int((editorComp.Cursor.X - editorComp.Border.X) / float64(tileset.TileSize))
 	ty := int((editorComp.Cursor.Y - editorComp.Border.Y) / float64(tileset.TileSize))
 
@@ -160,8 +177,15 @@ func (t *TilemapEditorSystem) place_tile(world *ecs.World, editorComp *TilemapEd
 
 	i := ty*tilemap.Columns + tx
 	if tilemap.Data[i] == tile {
-		return nil
+		return
 	}
 
-	return t.app.CommandStack().ExecuteCommand(NewPlaceTileCommand(tilemapID, tile, i))
+	t.tilePlacement.AddPlacement(&TilePlacementInfo{
+		Position:  i,
+		NewTileID: tile,
+		OldTileID: tilemap.Data[i],
+	})
+
+	tilemap.Data[i] = tile
+	tilemap.IsDirty = true
 }

@@ -18,29 +18,29 @@ func NewLoadMapCommand(world *ecs.World, newTilemapID string) *TilemapEditorLoad
 }
 
 func (c *TilemapEditorLoadMap) Execute() error {
-	tilemapEditor, err := FindTilemapEditorComponent(c.world)
+	tilemapComp, err := FindTilemapComponent(c.world)
 	if err != nil {
 		return err
 	}
-	c.oldTilemapID = tilemapEditor.LoadedTilemapID
-	tilemapEditor.LoadedTilemapID = c.newTilemapID
+	c.oldTilemapID = tilemapComp.TilemapID
+	tilemapComp.TilemapID = c.newTilemapID
 	return nil
 }
 
 func (c *TilemapEditorLoadMap) Undo() error {
-	tilemapEditor, err := FindTilemapEditorComponent(c.world)
+	tilemapComp, err := FindTilemapComponent(c.world)
 	if err != nil {
 		return err
 	}
-	tilemapEditor.LoadedTilemapID = c.oldTilemapID
+	tilemapComp.TilemapID = c.oldTilemapID
 	return nil
 }
 
 func (c *TilemapEditorLoadMap) Redo() error {
-	tilemapEditor, err := FindTilemapEditorComponent(c.world)
+	tilemapComp, err := FindTilemapComponent(c.world)
 	if err != nil {
 		return err
 	}
-	tilemapEditor.LoadedTilemapID = c.newTilemapID
+	tilemapComp.TilemapID = c.newTilemapID
 	return nil
 }

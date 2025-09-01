@@ -16,3 +16,8 @@ func get_tilemap_info(tilemapID string) (*tm.Tilemap, *ts.Tileset, error) {
 	}
 	return tilemap, tileset, nil
 }
+
+func set_tile_at(pos int, tileID int, tilemap *tm.Tilemap) {
+	tilemap.Data[pos] = tileID
+	tilemap.IsDirty = true
+}
