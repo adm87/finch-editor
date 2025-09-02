@@ -5,6 +5,12 @@ import (
 	tm "github.com/adm87/finch-tilemap/tilemaps"
 )
 
+type TilePlacementInfo struct {
+	Position  int
+	NewTileID int
+	OldTileID int
+}
+
 type TilemapEditorTilePlacement struct {
 	tilemapID     string
 	placementInfo []*TilePlacementInfo
@@ -17,8 +23,12 @@ func NewTilemapEditorTilePlacement(tilemapID string) *TilemapEditorTilePlacement
 	}
 }
 
-func (c *TilemapEditorTilePlacement) AddPlacement(info *TilePlacementInfo) {
-	c.placementInfo = append(c.placementInfo, info)
+func (c *TilemapEditorTilePlacement) AddPlacement(position, newTileID, oldTileID int) {
+	c.placementInfo = append(c.placementInfo, &TilePlacementInfo{
+		Position:  position,
+		NewTileID: newTileID,
+		OldTileID: oldTileID,
+	})
 }
 
 func (c *TilemapEditorTilePlacement) Execute() error {

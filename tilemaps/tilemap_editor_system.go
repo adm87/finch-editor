@@ -25,12 +25,6 @@ type TilemapEditorSystem struct {
 	tilePlacement *TilemapEditorTilePlacement
 }
 
-type TilePlacementInfo struct {
-	Position  int
-	NewTileID int
-	OldTileID int
-}
-
 func NewTilemapEditorSystem(app *finch.Application) *TilemapEditorSystem {
 	return &TilemapEditorSystem{
 		app:           app,
@@ -180,11 +174,7 @@ func (t *TilemapEditorSystem) place_tile(world *ecs.World, editorComp *TilemapEd
 		return
 	}
 
-	t.tilePlacement.AddPlacement(&TilePlacementInfo{
-		Position:  i,
-		NewTileID: tile,
-		OldTileID: tilemap.Data[i],
-	})
+	t.tilePlacement.AddPlacement(i, tile, tilemap.Data[i])
 
 	tilemap.Data[i] = tile
 	tilemap.IsDirty = true
