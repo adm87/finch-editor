@@ -64,3 +64,7 @@ func (c *TilemapEditorTilePlacement) Redo() error {
 	}
 	return nil
 }
+
+func (c *TilemapEditorTilePlacement) IsEmpty() bool {
+	return len(c.placementInfo) == 0
+}

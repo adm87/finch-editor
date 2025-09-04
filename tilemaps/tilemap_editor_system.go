@@ -54,62 +54,38 @@ func (t *TilemapEditorSystem) EarlyUpdate(world *ecs.World, deltaSeconds float64
 	if err != nil {
 		return err
 	}
-
 	if tilemapComp.TilemapID == "" {
 		return nil
 	}
-
 	editorComp, err := FindTilemapEditorComponent(world)
 	if err != nil {
 		return err
 	}
-
 	hasTilemapChanged := tilemapComp.TilemapID != editorComp.LoadedTilemapID
 	if hasTilemapChanged {
 		if err := t.load_tilemap(tilemapComp, editorComp); err != nil {
 			return err
 		}
 	}
-
 	tilemap, tileset, err := get_tilemap_info(tilemapComp.TilemapID)
 	if err != nil {
 		return err
 	}
-
 	transformComp, err := FindTilemapEditorTransform(world)
 	if err != nil {
 		return err
 	}
-
 	if hasTilemapChanged {
 		if err := t.update_editor_border(editorComp, transformComp, tilemap, tileset); err != nil {
 			return err
 		}
 	}
-
 	if err := t.update_editor_cursor(world, editorComp, transformComp, tilemap, tileset); err != nil {
 		return err
 	}
-
-	switch {
-	case inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft):
-		t.tilePlacement = NewTilemapEditorTilePlacement(editorComp.LoadedTilemapID)
-
-	case inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft):
-		if err := t.app.CommandStack().ExecuteCommand(t.tilePlacement); err != nil {
-			return err
-		}
-		t.tilePlacement = nil
+	if err := t.update_tile_placement(world, editorComp, tilemapComp, tilemap, tileset); err != nil {
+		return err
 	}
-
-	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
-		newTile := 0
-		if ebiten.IsKeyPressed(ebiten.KeyControl) {
-			newTile = -1
-		}
-		t.place_tile(world, editorComp, tilemap, tileset, tilemapComp.TilemapID, newTile)
-	}
-
 	return nil
 }
 
@@ -158,6 +134,34 @@ func (t *TilemapEditorSystem) update_editor_cursor(world *ecs.World, editorComp 
 	editorComp.Cursor.Y = wy
 
 	editorComp.CursorVisible = editorComp.Border.Intersects(editorComp.Cursor)
+	return nil
+}
+
+func (t *TilemapEditorSystem) update_tile_placement(world *ecs.World, editorComp *TilemapEditorComponent, tilemapComp *tm.TilemapComponent, tilemap *tm.Tilemap, tileset *ts.Tileset) error {
+	justPressed := inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft)
+	isPressed := ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft)
+	wasPressed := inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft)
+
+	switch {
+	case justPressed, isPressed:
+		newTile := 0
+		if ebiten.IsKeyPressed(ebiten.KeyControl) {
+			newTile = -1
+		}
+		if justPressed {
+			t.tilePlacement = NewTilemapEditorTilePlacement(editorComp.LoadedTilemapID)
+		}
+		t.place_tile(world, editorComp, tilemap, tileset, tilemapComp.TilemapID, newTile)
+
+	case wasPressed:
+		if t.tilePlacement != nil && !t.tilePlacement.IsEmpty() {
+			if err := t.app.CommandStack().ExecuteCommand(t.tilePlacement); err != nil {
+				return err
+			}
+		}
+		t.tilePlacement = nil
+	}
+
 	return nil
 }
 
