@@ -6,7 +6,8 @@ import (
 )
 
 type TilePlacementInfo struct {
-	Position  int
+	X         int
+	Y         int
 	NewTileID int
 	OldTileID int
 }
@@ -23,9 +24,10 @@ func NewTilemapEditorTilePlacement(tilemapID string) *TilemapEditorTilePlacement
 	}
 }
 
-func (c *TilemapEditorTilePlacement) AddPlacement(position, newTileID, oldTileID int) {
+func (c *TilemapEditorTilePlacement) AddPlacement(x, y, newTileID, oldTileID int) {
 	c.placementInfo = append(c.placementInfo, &TilePlacementInfo{
-		Position:  position,
+		X:         x,
+		Y:         y,
 		NewTileID: newTileID,
 		OldTileID: oldTileID,
 	})
@@ -47,7 +49,7 @@ func (c *TilemapEditorTilePlacement) Undo() error {
 		return err
 	}
 	for _, info := range c.placementInfo {
-		set_tile_at(info.Position, info.OldTileID, tilemap)
+		tilemap.SetTile(info.X, info.Y, info.OldTileID)
 	}
 	return nil
 }
@@ -58,7 +60,7 @@ func (c *TilemapEditorTilePlacement) Redo() error {
 		return err
 	}
 	for _, info := range c.placementInfo {
-		set_tile_at(info.Position, info.NewTileID, tilemap)
+		tilemap.SetTile(info.X, info.Y, info.NewTileID)
 	}
 	return nil
 }
