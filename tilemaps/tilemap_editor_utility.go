@@ -6,11 +6,11 @@ import (
 )
 
 func get_tilemap_info(tilemapID string) (*tm.Tilemap, *ts.Tileset, error) {
-	tilemap, err := tm.Cache().Get(tilemapID)
+	tilemap, err := tm.Storage().Get(tilemapID)
 	if err != nil {
 		return nil, nil, err
 	}
-	tileset, err := ts.Cache().Get(tilemap.TilesetID)
+	tileset, err := ts.Storage().Get(tilemap.TilesetID)
 	if err != nil {
 		return nil, nil, err
 	}

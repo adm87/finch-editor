@@ -1,7 +1,7 @@
 package camera
 
 import (
-	fcam "github.com/adm87/finch-core/components/camera"
+	fincam "github.com/adm87/finch-core/components/camera"
 	"github.com/adm87/finch-core/ecs"
 	"github.com/adm87/finch-core/errors"
 	"github.com/adm87/finch-core/types"
@@ -14,7 +14,7 @@ var (
 
 func NewCamera(world *ecs.World) (ecs.Entity, error) {
 	return world.NewEntityWithComponents(
-		fcam.NewCameraComponent(),
+		fincam.NewCameraComponent(),
 		NewCameraDragComponent(),
 		NewCameraPanComponent(),
 	)
@@ -22,7 +22,7 @@ func NewCamera(world *ecs.World) (ecs.Entity, error) {
 
 func FindCameraEntities(world *ecs.World) types.HashSet[ecs.Entity] {
 	return world.FilterEntitiesByComponents(
-		fcam.CameraComponentType,
+		fincam.CameraComponentType,
 		CameraDragComponentType,
 		CameraPanComponentType,
 	)
@@ -43,12 +43,12 @@ func FindCameraEntity(world *ecs.World) (ecs.Entity, error) {
 	return entity, nil
 }
 
-func FindCameraComponent(world *ecs.World) (*fcam.CameraComponent, error) {
+func FindCameraComponent(world *ecs.World) (*fincam.CameraComponent, error) {
 	entity, err := FindCameraEntity(world)
 	if err != nil {
 		return nil, err
 	}
-	cameraComponent, found, err := ecs.GetComponent[*fcam.CameraComponent](world, entity, fcam.CameraComponentType)
+	cameraComponent, found, err := ecs.GetComponent[*fincam.CameraComponent](world, entity, fincam.CameraComponentType)
 	if err != nil {
 		return nil, err
 	}

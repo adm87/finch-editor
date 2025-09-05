@@ -28,7 +28,7 @@ func NewPromptLoadTilemap(app *finch.Application, world *ecs.World) *PromptLoadT
 }
 
 func (c *PromptLoadTilemap) Execute() error {
-	path, err := get_tilemap_path(c.resourcePath)
+	path, err := get_tilemap_load_path(c.resourcePath)
 	if err != nil {
 		if err.Error() == "Cancelled" {
 			return nil
@@ -51,7 +51,7 @@ func (c *PromptLoadTilemap) Execute() error {
 	return c.app.CommandStack().ExecuteCommand(tilemaps.NewLoadMapCommand(c.world, tilemapID))
 }
 
-func get_tilemap_path(startDir string) (string, error) {
+func get_tilemap_load_path(startDir string) (string, error) {
 	return dialog.
 		File().
 		SetStartDir(startDir).

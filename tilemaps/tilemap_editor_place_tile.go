@@ -44,7 +44,7 @@ func (c *TilemapEditorTilePlacement) Execute() error {
 }
 
 func (c *TilemapEditorTilePlacement) Undo() error {
-	tilemap, err := tm.Cache().Get(c.tilemapID)
+	tilemap, err := tm.Storage().Get(c.tilemapID)
 	if err != nil {
 		return err
 	}
@@ -55,7 +55,7 @@ func (c *TilemapEditorTilePlacement) Undo() error {
 }
 
 func (c *TilemapEditorTilePlacement) Redo() error {
-	tilemap, err := tm.Cache().Get(c.tilemapID)
+	tilemap, err := tm.Storage().Get(c.tilemapID)
 	if err != nil {
 		return err
 	}
