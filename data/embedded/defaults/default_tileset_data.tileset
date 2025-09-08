@@ -1,5 +1,5 @@
 {
-  "image_id": "img_tileset_0000",
+  "image_id": "default_tileset_image",
   "rows": 9,
   "columns": 20,
   "tile_size": 18,

@@ -21,6 +21,7 @@ type TilemapEditorComponent struct {
 	CursorVisible bool
 
 	LoadedTilemapID string
+	IsDirty         bool
 }
 
 func NewTilemapEditorComponent() *TilemapEditorComponent {
@@ -31,6 +32,7 @@ func NewTilemapEditorComponent() *TilemapEditorComponent {
 		CursorColor:     color.RGBA{235, 203, 139, 255},
 		CursorWidth:     2,
 		LoadedTilemapID: "",
+		IsDirty:         false,
 	}
 }
 

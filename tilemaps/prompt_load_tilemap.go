@@ -1,4 +1,4 @@
-package commands
+package tilemaps
 
 import (
 	"fmt"
@@ -9,7 +9,6 @@ import (
 	"github.com/adm87/finch-core/ecs"
 	"github.com/adm87/finch-core/errors"
 	"github.com/adm87/finch-core/fsys"
-	"github.com/adm87/finch-editor/tilemaps"
 	"github.com/sqweek/dialog"
 )
 
@@ -28,6 +27,14 @@ func NewPromptLoadTilemap(app *finch.Application, world *ecs.World) *PromptLoadT
 }
 
 func (c *PromptLoadTilemap) Execute() error {
+	unsaved, err := check_unsaved_changes(c.world)
+	if err != nil {
+		return err
+	}
+	if unsaved && !confirm_discard_changes() {
+		return nil
+	}
+
 	path, err := get_tilemap_load_path(c.resourcePath)
 	if err != nil {
 		if err.Error() == "Cancelled" {
@@ -48,7 +55,16 @@ func (c *PromptLoadTilemap) Execute() error {
 		return errors.NewConflictError("invalid tilemap file")
 	}
 
-	return c.app.CommandStack().ExecuteCommand(tilemaps.NewLoadMapCommand(c.world, tilemapID))
+	tilemapComp, err := FindTilemapComponent(c.world)
+	if err != nil {
+		return err
+	}
+
+	if tilemapComp.TilemapID == tilemapID {
+		return nil
+	}
+
+	return c.app.CommandStack().ExecuteCommand(NewLoadMapCommand(c.app, c.world, tilemapID))
 }
 
 func get_tilemap_load_path(startDir string) (string, error) {

@@ -65,10 +65,13 @@ func RegisterMessageHandlers(app *finch.Application, world *ecs.World) error {
 }
 
 func RegisterKeyCommands(app *finch.Application, world *ecs.World) error {
-	if err := keys.RegisterAction(ebiten.KeyF5, keys.KeyPhaseRelease, commands.NewPromptSaveTilemap(app)); err != nil {
+	if err := keys.RegisterAction(ebiten.KeyF1, keys.KeyPhaseRelease, tilemaps.NewPromptNewTilemap(app, world)); err != nil {
 		return err
 	}
-	if err := keys.RegisterAction(ebiten.KeyF8, keys.KeyPhaseRelease, commands.NewPromptLoadTilemap(app, world)); err != nil {
+	if err := keys.RegisterAction(ebiten.KeyF5, keys.KeyPhaseRelease, tilemaps.NewPromptSaveTilemap(app)); err != nil {
+		return err
+	}
+	if err := keys.RegisterAction(ebiten.KeyF8, keys.KeyPhaseRelease, tilemaps.NewPromptLoadTilemap(app, world)); err != nil {
 		return err
 	}
 	if err := keys.RegisterAction(ebiten.KeyF9, keys.KeyPhaseRelease, commands.NewToggleGridLines(world)); err != nil {

@@ -63,9 +63,8 @@ func (t *TilemapEditorSystem) EarlyUpdate(world *ecs.World, deltaSeconds float64
 	}
 	hasTilemapChanged := tilemapComp.TilemapID != editorComp.LoadedTilemapID
 	if hasTilemapChanged {
-		if err := t.load_tilemap(tilemapComp, editorComp); err != nil {
-			return err
-		}
+		editorComp.LoadedTilemapID = tilemapComp.TilemapID
+		editorComp.IsDirty = false
 	}
 	tilemap, tileset, err := get_tilemap_info(tilemapComp.TilemapID)
 	if err != nil {
@@ -86,13 +85,7 @@ func (t *TilemapEditorSystem) EarlyUpdate(world *ecs.World, deltaSeconds float64
 	if err := t.update_tile_placement(world, editorComp, tilemapComp, tilemap, tileset); err != nil {
 		return err
 	}
-	return nil
-}
-
-func (t *TilemapEditorSystem) load_tilemap(tilemapComp *tm.TilemapComponent, editorComp *TilemapEditorComponent) error {
-	editorComp.LoadedTilemapID = tilemapComp.TilemapID
-
-	t.app.SetTitleContext(tilemapComp.TilemapID)
+	t.update_title_context(editorComp)
 	return nil
 }
 
@@ -177,6 +170,16 @@ func (t *TilemapEditorSystem) place_tile(world *ecs.World, editorComp *TilemapEd
 		return
 	}
 
+	editorComp.IsDirty = true
+
 	t.tilePlacement.AddPlacement(tx, ty, newTile, currentTile)
 	tilemap.SetTile(tx, ty, newTile)
+}
+
+func (t *TilemapEditorSystem) update_title_context(editorComp *TilemapEditorComponent) {
+	titleCtx := editorComp.LoadedTilemapID
+	if editorComp.IsDirty {
+		titleCtx += " *"
+	}
+	t.app.SetTitleContext(titleCtx)
 }
